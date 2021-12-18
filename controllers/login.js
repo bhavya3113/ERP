@@ -5,9 +5,9 @@ exports.login = (req ,res ,next)=>{
         const email = req.body.email;
         const pass = req.body.pass;
         const user = req.query.user;
-        user.find();
+        // user.find();
         console.log(user);
-        const accessToken = jwt.sign({email:email},process.env.AC,{expiresIn:"50s"});
+        const accessToken = jwt.sign({email:email},process.env.AC,{expiresIn:"150s"});
         const refreshToken = jwt.sign({email:email},process.env.RE , {expiresIn:"1d"});
         res.statusCode = 201;
         return res.json({
@@ -17,6 +17,7 @@ exports.login = (req ,res ,next)=>{
     }
     catch{
         const err = new Error('not found');
+        err.status= 404;
         throw err;
     }
 }
