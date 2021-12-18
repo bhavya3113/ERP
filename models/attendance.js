@@ -7,17 +7,11 @@ const attendanceSchema = new schema({
     ref:"student"
   },
   attendance:[{
-    date:{
-      type:Date,
-    },
-    subject:{
-      type:schema.Types.ObjectId,
-      ref:"subject"
-    },
-    AorP:{
-      type: String
-    }
-  }]
+    date: Date,
+    subject: String,
+    AorP: String
+  }],
+  percentage: Number
 })
 
 module.exports = mongoose.model("attendance",attendanceSchema);

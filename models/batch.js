@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
 const batchSchema = new schema({
-  batch:{
+  batchName:{
     type: String,
     require:true
   },
@@ -16,7 +16,7 @@ const batchSchema = new schema({
   }],
   timetable:[{
     type:schema.Types.ObjectId,
-    ref:"timetable"
+    ref:"stutimetable"
   }]  
 })
 

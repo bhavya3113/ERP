@@ -28,11 +28,32 @@ const facultySchema = new schema({
     ref:"subject",
     require:true
   },
-  
-  // profileImgUrl:{
-  //   type: String,
-  //   default:  path.join('images','image-noprofile.png')
-  // }
+  timetable:[{
+    type:schema.Types.ObjectId,
+    ref:"factimetable"
+  }],
+  image:{
+    type: String,
+    //default:  path.join('images','image-noprofile.png')
+  },
+  feedback:[{
+    student:{ 
+      type: schema.Types.ObjectId,
+      ref:'student'
+    },
+    range:{
+    type: Number,
+    min:1,
+    max:5,
+    },
+    remark:{
+      type: String
+    },
+  }],
+  avgrange:{ 
+   type: Number,
+   require: false,
+  },
 })
 
 module.exports = mongoose.model("",facultySchema);

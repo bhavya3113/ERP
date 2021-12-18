@@ -30,10 +30,32 @@ const studentSchema = new schema({
     type: String,
     require:true
   },
-  // profileImgUrl:{
-  //   type: String,
-  //   default:  path.join('images','image-noprofile.png')
-  // }
+  subjects:[{
+    sub:{
+      type:schema.Types.ObjectId,
+      ref:"subject"
+    },
+    faculty: String
+  }],
+  image:{
+    type: String,
+//    default:  path.join('images','image-noprofile.png')
+  },
+  feedback:[{
+    faculty:{ 
+      type: schema.Types.ObjectId,
+      ref:'faculty'
+    },
+    remark:{
+      type: String
+    },
+  }],
+  address: String,
+  mobileno: Number,
+  rollno: Number,
+  dob: String,
+  father: String,
+  mother: String
 })
 
 module.exports = mongoose.model("student",studentSchema);
