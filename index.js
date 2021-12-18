@@ -1,12 +1,15 @@
 const express = require('express');
-const dotenv = require("dotenv")
-const mongoose = require("mongoose");
+
+const dotenv = require('dotenv')
+const app = express();
+app.use(express.json());
+dotenv.config();
 
 const authRoutes = require('./routes/auth');
 
-dotenv.config();
-const app = express();
-app.use(express.json());
+const mongoose = require("mongoose");
+
+
 app.use(express.urlencoded({extended:true}));
 
 app.use((req, res, next) => {
@@ -17,8 +20,19 @@ app.use((req, res, next) => {
 });
 
 
+
 app.use(authRoutes);
 
+// error handler
+app.use((err,req,res,next)=>{
+    res.status(err.status || 500);
+    res.send({
+        error : {
+            status: err.status || 500,
+            message : err.message
+        }
+    })
+})
 
 
 mongoose
