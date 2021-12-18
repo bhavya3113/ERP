@@ -1,9 +1,32 @@
 const express = require('express');
+const dotenv = require("dotenv")
+const mongoose = require("mongoose");
+
+const authRoutes = require('./routes/auth');
+
+dotenv.config();
 const app = express();
 app.use(express.json());
-const authRoutes = require('./routes/auth');
+app.use(express.urlencoded({extended:true}));
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods","GET, POST, PUT, PATCH, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  next();
+});
+
 
 app.use(authRoutes);
 
 
-app.listen(3000);
+
+mongoose
+  .connect(
+    process.env.CONNECT_TO_DB
+  )
+  .then(result => {
+    app.listen(process.env.PORT);
+    console.log("connected");
+  })
+  .catch(err => console.log("error",err));
