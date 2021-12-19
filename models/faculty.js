@@ -56,4 +56,4 @@ const facultySchema = new schema({
   },
 })
 
-module.exports = mongoose.model("",facultySchema);
+module.exports = mongoose.model("faculty",facultySchema);

@@ -6,25 +6,25 @@ const router = express.Router();
 const loginController = require('../controllers/login');
 const req = require('express/lib/request');
 
-router.post('/renewToken',(req,res,next)=>{
-    const refreshToken = req.body.token;
-    if(!refreshToken){
-        return res.status(403).json({message:"User not authorized"})
+router.get('/renewToken',(req,res,next)=>{
+    const refreshToken = req.get('Authorization');
+    if(!refreshToken.split(' ')[1]){
+        return res.status(403).json({message:"User not authenticated"})
     }
-    jwt.verify(refreshToken ,process.env.RE,(err,user)=>{
+    jwt.verify(refreshToken.split(' ')[1] ,process.env.RE,(err,user)=>{
         if(!err){
+            console.log(user);
             const accessToken = jwt.sign({email:user},process.env.AC,{expiresIn:"150s"});
             return res.status(201).json(accessToken);
         }
         else{
-            err.message = "user not authenticated";
             err.status = 403;
             throw err;
         }
     });
 })
 
-router.post("/login",auth,loginController.login);
+router.post("/login",loginController.login);
 
 
 

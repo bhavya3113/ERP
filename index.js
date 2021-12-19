@@ -35,12 +35,9 @@ app.use((err,req,res,next)=>{
 })
 
 
-mongoose
-  .connect(
-    process.env.CONNECT_TO_DB
-  )
-  .then(result => {
+mongoose.connect(process.env.CONNECT_TO_DB)
+.then(result => {
     app.listen(process.env.PORT);
     console.log("connected");
-  })
-  .catch(err => console.log("error",err));
+})
+.catch(err => console.log("error",err));
