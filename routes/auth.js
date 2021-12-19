@@ -24,7 +24,7 @@ router.post('/renewToken',(req,res,next)=>{
     });
 })
 
-router.post("/login",auth,loginController.login);
+router.post("/login",loginController.login);
 
 
 

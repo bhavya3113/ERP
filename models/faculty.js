@@ -25,8 +25,7 @@ const facultySchema = new schema({
   }],
   subject:{
     type:schema.Types.ObjectId,
-    ref:"subject",
-    require:true
+    ref:"subject"
   },
   timetable:[{
     type:schema.Types.ObjectId,
@@ -56,4 +55,4 @@ const facultySchema = new schema({
   },
 })
 
-module.exports = mongoose.model("",facultySchema);
+module.exports = mongoose.model("faculty",facultySchema);
