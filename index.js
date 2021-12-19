@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 
 
 
-app.use(authRoutes);
+app.use('/auth',authRoutes);
 app.use('/admin',adminRoutes);
 // error handler
 app.use((error, req, res, next) => {
