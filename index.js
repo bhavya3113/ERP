@@ -6,7 +6,7 @@ app.use(express.json());
 dotenv.config();
 
 const authRoutes = require('./routes/auth');
-
+const adminRoutes = require('./routes/admin');
 const mongoose = require("mongoose");
 
 
@@ -22,17 +22,15 @@ app.use((req, res, next) => {
 
 
 app.use(authRoutes);
-
+app.use('/admin',adminRoutes);
 // error handler
-app.use((err,req,res,next)=>{
-    res.status(err.status || 500);
-    res.send({
-        error : {
-            status: err.status || 500,
-            message : err.message
-        }
-    })
-})
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
+});
 
 
 mongoose.connect(process.env.CONNECT_TO_DB)

@@ -25,8 +25,7 @@ const facultySchema = new schema({
   }],
   subject:{
     type:schema.Types.ObjectId,
-    ref:"subject",
-    require:true
+    ref:"subject"
   },
   timetable:[{
     type:schema.Types.ObjectId,

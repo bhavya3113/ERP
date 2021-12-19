@@ -2,60 +2,64 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
 const studentSchema = new schema({
-  fullname:{
+  fullname: {
     type: String,
-    require: true
+    require: true,
   },
-  email:{
+  email: {
     type: String,
-    require: true
+    require: true,
   },
-  password:{
+  password: {
     type: String,
-    require:true
+    require: true,
   },
-  sem:{
+  sem: {
     type: Number,
-    require: true
+    require: true,
   },
-  year:{
+  year: {
     type: Number,
-    require: true
+    require: true,
   },
-  branch:{
+  branch: {
     type: String,
-    require:true
+    require: true,
   },
-  batch:{
+  batch: {
     type: String,
-    require:true
+    require: true,
   },
-  subjects:[{
-    sub:{
-      type:schema.Types.ObjectId,
-      ref:"subject"
+  subjects: [
+    {
+      sub: {
+        type: schema.Types.ObjectId,
+        ref: "subject",
+      },
+      faculty: String,
     },
-    faculty: String
-  }],
-  image:{
+  ],
+  image: {
     type: String,
-//    default:  path.join('images','image-noprofile.png')
+    //    default:  path.join('images','image-noprofile.png')
   },
-  feedback:[{
-    faculty:{ 
-      type: schema.Types.ObjectId,
-      ref:'faculty'
+  feedback: [
+    {
+      faculty: {
+        type: schema.Types.ObjectId,
+        ref: "faculty",
+      },
+      remark: {
+        type: String,
+      },
     },
-    remark:{
-      type: String
-    },
-  }],
+  ],
   address: String,
   mobileno: Number,
   rollno: Number,
   dob: String,
   father: String,
-  mother: String
-})
+  mother: String,
+});
 
-module.exports = mongoose.model("student",studentSchema);
+module.exports = mongoose.model("student", studentSchema);
