@@ -12,7 +12,7 @@ exports.login = (req ,res ,next)=>{
         const email = req.body.email;
         const pass = req.body.password;
         const user = req.query.user;
-        (user==="student")?student:faculty.findOne({email:email}).then(result=>{
+        ((user==="student")?student:faculty).findOne({email:email}).then(result=>{
             if(!result){
                 return res.status(404).json('Not found');
             }
@@ -53,7 +53,7 @@ exports.resetPassword= async (req,res,next)=>{
       error.statusCode = 422;
       throw error;
     }
-     
+
         if(newPwd != confirmPwd)
         {
           const error = new Error("Passwords do not match");
@@ -61,7 +61,7 @@ exports.resetPassword= async (req,res,next)=>{
           throw error;
         }
         const hashedPassword = await bcrypt.hash(newPwd, 12)
-        const user = await User.findOne({email: email})
+        const user = await ((User==="student")?student:faculty).findOne({email:email})
             if(user){
               user.password = hashedPassword;
               user.save();
@@ -70,9 +70,8 @@ exports.resetPassword= async (req,res,next)=>{
         }
     catch(err){
         if (!err.statusCode) {
-            err.statusCode = 500;
+            err.statusCode = 500;}
             next(err);
-          } 
     }
   }
   
@@ -82,9 +81,9 @@ exports.resetPassword= async (req,res,next)=>{
     const index = email.indexOf("@");
     const fullname = email.substring(0,index);;
     const otp = otpGenerator.generate(6, {
-      alphabets: false,
-      specialChars: false,
-      upperCase: false,
+        lowerCaseAlphabets: false,
+        upperCaseAlphabets: false,
+        specialChars: false
     });
     const onetimepwd = new Otp({
       email:email,
@@ -96,9 +95,8 @@ exports.resetPassword= async (req,res,next)=>{
     }
     catch(err){
         if (!err.statusCode) {
-            err.statusCode = 500;
+            err.statusCode = 500;}
             next(err);
-          }
     }
   }
 
@@ -106,19 +104,19 @@ exports.resetPassword= async (req,res,next)=>{
     try{
       const {email} = req.body; 
       const User = req.query.user;
-      const user = await User.findOne({ email: email })
-    
+      const user = await ((User==="student")?student:faculty).findOne({email:email});
       if(!user)
       {
         const err = new Error('Not registered');
         err.statusCode = 400;
         throw err;
       }
-      const otp = otpGenerator.generate(6, {
-        alphabets: false,
-        specialChars: false,
-        upperCase: false,
+      const otp = otpGenerator.generate(6,{
+        lowerCaseAlphabets: false,
+        upperCaseAlphabets: false,
+        specialChars: false
       });
+      
       const onetimepwd = new Otp({
         email:email,
         otp:otp
@@ -129,9 +127,8 @@ exports.resetPassword= async (req,res,next)=>{
     }
     catch(err){
       if (!err.statusCode) {
-        err.statusCode = 500;
+        err.statusCode = 500;}
         next(err);
-      }
     }
   }
   exports.checkotpbeforereset= async (req,res,next)=>{
@@ -150,13 +147,13 @@ exports.resetPassword= async (req,res,next)=>{
         err.statusCode = 422;
         throw err;
       }
+        await newotp.remove();
         return res.status(200).json({message: "verified.Proceed to reset password"});
     }
     catch(err){
       if (!err.statusCode) {
-        err.statusCode = 500;
+        err.statusCode = 500;}
         next(err);
-      }
     }
   }
   
