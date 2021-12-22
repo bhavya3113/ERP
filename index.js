@@ -10,7 +10,7 @@ const adminRoutes = require('./routes/admin');
 const mongoose = require("mongoose");
 
 
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({extended:false}));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

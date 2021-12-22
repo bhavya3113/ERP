@@ -7,11 +7,20 @@ const mail = require("../utils/sendMails");
 const otpGenerator = require("otp-generator");
 const { validationResult } = require('express-validator');
 
+var emailregex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/
+
 exports.login = (req ,res ,next)=>{
     try {
         const email = req.body.email;
         const pass = req.body.password;
         const user = req.query.user;
+
+        var validemail = emailregex.test(email);
+        if (!validemail) {
+          const error = new Error('Please enter a valid email');
+          error.statusCode = 422;
+          throw error;
+         }
         ((user==="student")?student:faculty).findOne({email:email}).then(result=>{
             if(!result){
                 return res.status(404).json('Not found');

@@ -3,7 +3,8 @@ const schema = mongoose.Schema;
 
 const examSchema = new schema({
   
-  examName: String
+  name: String,
+  code:Number
   
 })
 

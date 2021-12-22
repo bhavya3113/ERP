@@ -1,9 +1,16 @@
 const Student = require("../models/student");
 const Faculty = require("../models/faculty");
+const Branch = require("../models/branch");
+const Exam = require("../models/exam");
+const Subject = require("../models/subject");
 const mail = require("../utils/sendMails");
+const branchList = require("../utils/branchlist");
+const subjectList = require("../utils/subjectlist");
+const examList = require("../utils/examlist");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require('express-validator');
 
+//to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
   try{
     const errors = validationResult(req);
@@ -49,7 +56,7 @@ exports.addFaculty = async (req,res,next)=>{
   }
 }
 
-
+//to add a new batch of students
 exports.addStudents = async (req,res,next)=>{
   try{
     const errors = validationResult(req);
@@ -65,7 +72,8 @@ exports.addStudents = async (req,res,next)=>{
       err.statusCode = 422;
       throw err;
     }
-    const {array}= req.body;
+    const {array,password}= req.body;
+    const hashedPswrd = await bcrypt.hash(password, 12);
 
     await Student.insertMany(array);
   
@@ -78,4 +86,144 @@ exports.addStudents = async (req,res,next)=>{
       err.statusCode=500;
       next(err);
   } 
+}
+
+// //to update branch list
+// exports.addBranches = async (req,res,next)=>{
+//   try{
+//     const branchlist = [];
+//     for (const code in branchList) {
+//       if (branchList.hasOwnProperty(code)) {
+//         const branch = branchList[code];
+//           let onebranch = {
+//             name: branch,
+//             code: code
+//           };
+//           branchlist.push(onebranch);
+//       }
+//     }
+//     Branch.insertMany(branchlist);
+//     return res.status(200).json({message: "branch list updated"});
+//   }
+//   catch(err){
+//     if(!err.statusCode)
+//     err.statusCode =500;
+//     next();
+//   }
+// }
+
+
+//to update branch or subject or exam list
+exports.addBranchOrSubjectOrExam = async (req,res,next)=>{
+  try{
+    const {name,code}=req.body;
+    const mod = req.query.mod;
+    const result = await ((mod==="branch")?Branch:(mod==="subject")?Subject:Exam).findOne({Code:code})
+      if(!result){
+       await ((mod==="branch")?Branch:(mod==="subject")?Subject:Exam).insertOne({
+          name: name,
+          code: code
+        })
+        return res.status(200).json({message: `${mod} list updated`});
+      }
+      else{
+        const error = new Error(`${mod} already Exists`);
+        error.statusCode = 400;
+        throw error;
+      }
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode =500;
+    next();
+  }
+}
+
+//to view branches
+exports.viewBranches = async (req,res,next)=>{
+  try{
+    const branchlist = await Branch.find();
+    return res.status(201).json({branches: branchlist});
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode =500;
+    next();
+  }
+}
+
+
+// //to update subject list
+// exports.addSubjects = async (req,res,next)=>{
+//   try{
+//     const subjectlist = [];
+//     for (const code in subjectList) {
+//       if (subjectList.hasOwnProperty(code)) {
+//         const subject = subjectList[code];
+//           let onesubject = {
+//             name: subject,
+//             code: code
+//           };
+//           subjectlist.push(onesubject);
+//       }
+//     }
+//     Subject.insertMany(subjectlist);
+//     return res.status(200).json({message: "subject list updated"});
+//   }
+//   catch(err){
+//     if(!err.statusCode)
+//     err.statusCode =500;
+//     next();
+//   }
+// }
+
+//to view subjects
+exports.viewSubjects = async (req,res,next)=>{
+  try{
+    const subjectlist = await Subject.find();
+    return res.status(201).json({subjects: subjectlist});
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode =500;
+    next();
+  }
+}
+
+
+//  //to update exam list
+// exports.addExams = async (req,res,next)=>{
+//   try{
+//     const examlist = [];
+//     for (const code in examList) {
+//       if (examList.hasOwnProperty(code)) {
+//         const exam = examList[code];
+//         let oneexam = {
+//           name: exam,
+//           code:code
+//         };
+//         examlist.push(oneexam);
+//       }
+//     }
+//     Exam.insertMany(examlist);
+//     return res.status(200).json({message: "exam list updated"});
+//   }
+//   catch(err){
+//     if(!err.statusCode)
+//     err.statusCode =500;
+//     next();
+//   }
+// }
+
+//to view exams
+exports.viewExams = async (req,res,next)=>{
+  try{
+    const examlist = await Exam.find();
+    return res.status(201).json({exams: examlist});
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode =500;
+    next();
+  }
 }
