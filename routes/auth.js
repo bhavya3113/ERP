@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const loginController = require('../controllers/login');
-const req = require('express/lib/request');
+
 
 router.get('/renewToken',(req,res,next)=>{
     const refreshToken = req.get('Authorization');
@@ -29,21 +29,21 @@ router.post("/login",[
     body("email").normalizeEmail()
     ],loginController.login);
 
-    router.post("/resendotp",[
-        body("email").normalizeEmail()
-      ],loginController.resendotp);
+router.post("/resendotp",[
+    body("email").normalizeEmail()
+    ],loginController.resendotp);
       
-      router.post("/verifybeforereset",[
-        body("email").normalizeEmail()
-      ],loginController.verifybeforereset);
+router.post("/verifybeforereset",[
+    body("email").normalizeEmail()
+    ],loginController.verifybeforereset);
       
-      router.post("/checkotpbeforereset",[
-        body("email").normalizeEmail()
-      ],loginController.checkotpbeforereset);
+router.post("/checkotpbeforereset",[
+    body("email").normalizeEmail()
+    ],loginController.checkotpbeforereset);
       
-      router.post("/resetpassword",[
-        body("email").normalizeEmail(),
-        body("password").trim().isLength({ min: 8 })
-      ],loginController.resetPassword);
+router.post("/resetpassword",[
+    body("email").normalizeEmail(),
+    body("password").trim().isLength({ min: 8 })
+    ],loginController.resetPassword);
 
 module.exports = router;

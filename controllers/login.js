@@ -28,6 +28,10 @@ exports.login = (req ,res ,next)=>{
             // console.log(result);
             bcrypt.compare(pass,result.password).then(item=>{
                 if(item){
+                    console.log(result.isAdmin);
+                    if((user==="admin")&&(!result.isAdmin)){
+                      return res.status(301).json("user is not admin");
+                    }
                     const accessToken = jwt.sign({email:email,userId:result._id},process.env.AC,{expiresIn:"150s"});
                     const refreshToken = jwt.sign({email:email,userId:result._id},process.env.RE , {expiresIn:"86400s"});
                     res.statusCode = 201;
@@ -109,7 +113,7 @@ exports.resetPassword= async (req,res,next)=>{
     }
   }
 
-  exports.verifybeforereset = async (req,res,next)=>{
+  exports.verifybeforereset = async(req,res,next)=>{
     try{
       const {email} = req.body; 
       const User = req.query.user;

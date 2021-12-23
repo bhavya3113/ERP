@@ -15,9 +15,9 @@ const facultySchema = new schema({
     require:true
   },
   isAdmin:{
-    type: String,
+    type: Boolean,
     require: true,
-    default:"false"
+    default:false
   },
   batches:[{
     type:schema.Types.ObjectId,
