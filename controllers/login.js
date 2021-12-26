@@ -6,7 +6,7 @@ const student = require('../models/student');
 exports.login = (req ,res ,next)=>{
     try {
         const email = req.body.email;
-        const pass = req.body.pass;
+        const pass = req.body.password;
         const user = req.query.user;
         (user==="student")?student:faculty.findOne({email:email}).then(result=>{
             if(!result){
@@ -15,7 +15,7 @@ exports.login = (req ,res ,next)=>{
             console.log(result);
             bcrypt.compare(pass,result.password).then(item=>{
                 if(item){
-                    const accessToken = jwt.sign({email:email},process.env.AC,{expiresIn:"150s"});
+                    const accessToken = jwt.sign({email:email},process.env.AC,{expiresIn:"150000000000s"});
                     const refreshToken = jwt.sign({email:email},process.env.RE , {expiresIn:"10s"});
                     res.statusCode = 201;
                     return res.json({
