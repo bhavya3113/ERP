@@ -7,6 +7,7 @@ const isAuth = require("../middleware/isAuth");
 
 
 router.post("/attendance",isAuth,facultyController.addAttendance);
+router.post("/results",isAuth,facultyController.addresults);
 
 module.exports=router;
 
