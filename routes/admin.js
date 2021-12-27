@@ -16,5 +16,7 @@ router.get("/viewsubjects",adminController.viewSubjects);
 router.get("/viewexams",adminController.viewExams); 
 router.post("/updatemodels",adminController.addBranchOrSubjectOrExam);
 
+router.post("/timetable",adminController.timetable);
+
 module.exports=router;
 

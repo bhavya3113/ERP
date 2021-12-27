@@ -9,6 +9,8 @@ const subjectList = require("../utils/subjectlist");
 const examList = require("../utils/examlist");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require('express-validator');
+const { aggregate } = require("../models/student");
+const faculty = require("../models/faculty");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -76,7 +78,7 @@ exports.addStudents = async (req,res,next)=>{
     const hashedPswrd = await bcrypt.hash(password, 12);
 
     await Student.insertMany(array);
-  
+
     for(var i=0;i<array.length;i++)
       mail.sendRegMail(array[i].email,array[i].password,array[i].fullname);
     return res.status(201).json({Message : "Student Successfully Registred. Email sent."});
@@ -85,7 +87,7 @@ exports.addStudents = async (req,res,next)=>{
     if(!err.statusCode)
       err.statusCode=500;
       next(err);
-  } 
+  }
 }
 
 // //to update branch list
@@ -226,4 +228,13 @@ exports.viewExams = async (req,res,next)=>{
     err.statusCode =500;
     next();
   }
+}
+
+exports.timetable = async(req,res,next)=>{
+	const period = `isfree[${req.body.period}]`;
+	console.log(period);
+	const subject = req.body.subject;
+	faculty.find().then(result=>{
+		res.json(result);
+	})
 }

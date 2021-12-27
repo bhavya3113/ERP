@@ -14,7 +14,12 @@ exports.login = (req ,res ,next)=>{
         const email = req.body.email;
         const pass = req.body.password;
         const user = req.query.user;
-
+        console.log(user);
+        if(!user){
+          const err = new Error('Unknown person');
+          err.statusCode = 301;                                                      //change
+          throw err;
+        }
         var validemail = emailregex.test(email);
         if (!validemail) {
           const error = new Error('Please enter a valid email');
@@ -23,6 +28,7 @@ exports.login = (req ,res ,next)=>{
          }
         ((user==="student")?student:faculty).findOne({email:email}).then(result=>{
             if(!result){
+              console.log('Not found');
                 return res.status(404).json('Not found');
             }
             // console.log(result);
@@ -30,7 +36,7 @@ exports.login = (req ,res ,next)=>{
                 if(item){
                     console.log(result.isAdmin);
                     if((user==="admin")&&(!result.isAdmin)){
-                      return res.status(301).json("user is not admin");
+                      return res.status(302).json("user is not admin");
                     }
                     const accessToken = jwt.sign({email:email,userId:result._id},process.env.AC,{expiresIn:"150s"});
                     const refreshToken = jwt.sign({email:email,userId:result._id},process.env.RE , {expiresIn:"86400s"});
@@ -41,15 +47,13 @@ exports.login = (req ,res ,next)=>{
                         refreshToken
                     });
                 }
-                res.statusCode = 401;
+                res.status(403);
                 res.json('incorrect pass');
             })
         });
     }
-    catch{
-        const err = new Error('not found');
-        err.status= 404;
-        throw err;
+    catch(err){
+        next(err);
     }
 }
 
@@ -93,11 +97,13 @@ exports.resetPassword= async (req,res,next)=>{
     const {email} = req.body;
     const index = email.indexOf("@");
     const fullname = email.substring(0,index);;
+    console.log(email);
     const otp = otpGenerator.generate(6, {
         lowerCaseAlphabets: false,
         upperCaseAlphabets: false,
         specialChars: false
     });
+    console.log(otp);
     const onetimepwd = new Otp({
       email:email,
       otp:otp
@@ -157,7 +163,7 @@ exports.resetPassword= async (req,res,next)=>{
       if (newotp.otp !== otp) 
       { 
         const err = new Error("Wrong Otp");
-        err.statusCode = 422;
+        err.statusCode = 420;
         throw err;
       }
         await newotp.remove();
