@@ -9,8 +9,14 @@ const subjectList = require("../utils/subjectlist");
 const examList = require("../utils/examlist");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 const { aggregate } = require("../models/student");
 const faculty = require("../models/faculty");
+const batch = require("../models/batch");
+const { json } = require("express/lib/response");
+const { ObjectId } = require("mongodb");
+const req = require("express/lib/request");
+const subject = require("../models/subject");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -231,10 +237,21 @@ exports.viewExams = async (req,res,next)=>{
 }
 
 exports.timetable = async(req,res,next)=>{
-	const period = `isfree[${req.body.period}]`;
-	console.log(period);
-	const subject = req.body.subject;
-	faculty.find().then(result=>{
-		res.json(result);
-	})
+  try{
+    const batchname = req.body.batchname;
+    const arr = [];
+    result = await batch.findOne({batchName:batchname});
+    let s=[];
+    for(let i = 0 ; i < result.subjects.length;i++){
+      const sub = await subject.findById({_id:result.subjects[i]});
+      s.push(sub.name);
+      const teacher = await Faculty.aggregate([{$match:{"subject":result.subjects[i]}},{$group:{_id:"$fullname"}}]);
+      s.push(teacher);
+    }
+    console.log(s);
+    res.status(201).json(s);
+  }
+  catch(err){
+    next(err);
+  }   
 }
