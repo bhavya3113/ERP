@@ -12,7 +12,7 @@ exports.addFaculty = async (req,res,next)=>{
       error.statusCode = 422;
       throw error;
     }
-    const admin = await Faculty.findById(req.UserId);
+    const admin = await Faculty.findById(req.userId);
     if(!admin || admin.isAdmin=="false")
     {
       const err = new Error('Not an Admin');
@@ -58,7 +58,7 @@ exports.addStudents = async (req,res,next)=>{
       error.statusCode = 422;
       throw error;
     }
-    const admin = await Faculty.findById(req.UserId);
+    const admin = await Faculty.findById(req.userId);
     if(!admin || admin.isAdmin=="false")
     {
       const err = new Error('Not an Admin');
