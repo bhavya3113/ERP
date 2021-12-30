@@ -3,8 +3,8 @@ const schema = mongoose.Schema;
 
 const examSchema = new schema({
   
-  examName: String
-  
+  examName: String,
+  maxMarks: Number
 })
 
 module.exports = mongoose.model("exam",examSchema);

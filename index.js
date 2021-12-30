@@ -7,6 +7,7 @@ dotenv.config();
 
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
+const facultyRoutes = require("./routes/faculty");
 const mongoose = require("mongoose");
 
 
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 app.use('/auth',authRoutes);
 app.use('/admin',adminRoutes);
+app.use('/faculty',facultyRoutes);
 // error handler
 app.use((error, req, res, next) => {
   console.log(error);

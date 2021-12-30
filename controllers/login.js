@@ -19,8 +19,10 @@ exports.login = (req ,res ,next)=>{
             // console.log(result);
             bcrypt.compare(pass,result.password).then(item=>{
                 if(item){
+
                     const accessToken = jwt.sign({email:email,userId:result._id},process.env.AC,{expiresIn:"150s"});
                     const refreshToken = jwt.sign({email:email,userId:result._id},process.env.RE , {expiresIn:"86400s"});
+
                     res.statusCode = 201;
                     return res.json({
                         email,
