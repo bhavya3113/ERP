@@ -6,6 +6,10 @@ const batchSchema = new schema({
     type: String,
     require:true
   },
+  sem: {
+    type: Number,
+    require: true,
+  },
   students:[{
     type:schema.Types.ObjectId,
     ref:"student"

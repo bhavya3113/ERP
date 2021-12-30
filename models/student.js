@@ -32,11 +32,11 @@ const studentSchema = new schema({
   },
   subjects: [
     {
-      sub: {
+      // sub: {
         type: schema.Types.ObjectId,
         ref: "subject",
-      },
-      faculty: String,
+      // },
+      // faculty: String,
     },
   ],
   image: {

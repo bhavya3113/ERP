@@ -42,7 +42,10 @@ exports.addAttendance = async (req,res,next)=>{
 
 exports.addresults = async(req,res,next)=>{
   try{
-    const {sem,exam,subject,array} = req.body;
+    const {sem,exam,subject,array,maxmarks} = req.body;
+    const ex = await Exam.findByIdAndUpdate(exam,
+      {$set:{maxMarks: maxmarks}}
+    )
     await Promise.all(array.map(async (i) => {
       const updateresult = await Result.updateOne(
         { student:i.student},
@@ -89,6 +92,57 @@ exports.viewClass = async(req,res,next)=>{
         percentage:percent
       }
       array.push(obj);
+    }))
+    return res.status(201).json(array);
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode = 500;
+    next();
+  }
+}
+
+
+exports.viewScores = async(req,res,next)=>{
+  try{
+    const batchid = req.params.batch;
+    const sub = req.params.sub;
+    const batch = await Batch.findById(batchid).populate('students');
+    // console.log(batch);
+    const array=[];
+    await Promise.all(batch.students.map(async (i) => {
+      const results = await Result.findOne({student:i});
+      if(results == null)
+      {
+        obj ={
+          student: i._id,
+          sem: 1,
+          subject: sub,
+          score: 0
+        }
+        array.push(obj);
+      }
+      else{
+      // console.log(results)
+      results.scores.filter(sco=>{
+        if(sco.subject == sub && sco.sem == i.sem)
+          {
+            obj = sco;
+            obj.student = i._id;
+            // console.log(obj);
+            array.push(obj);
+          }
+          else{
+            obj ={
+              student: i._id,
+              sem: 1,
+              subject: sub,
+              score: 0
+            }
+            array.push(obj);
+          }
+      });
+    }
     }))
     return res.status(201).json(array);
   }
