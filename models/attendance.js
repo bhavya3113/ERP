@@ -10,8 +10,7 @@ const attendanceSchema = new schema({
     date: Date,
     subject:schema.Types.ObjectId ,
     AorP: String
-  }],
-  percentage: Number
+  }]
 })
 
 module.exports = mongoose.model("attendance",attendanceSchema);
