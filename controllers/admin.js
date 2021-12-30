@@ -3,6 +3,7 @@ const Faculty = require("../models/faculty");
 const Branch = require("../models/branch");
 const Exam = require("../models/exam");
 const Subject = require("../models/subject");
+const Holiday=require('../models/holiday');
 const mail = require("../utils/sendMails");
 const branchList = require("../utils/branchlist");
 const subjectList = require("../utils/subjectlist");
@@ -254,4 +255,28 @@ exports.timetable = async(req,res,next)=>{
   catch(err){
     next(err);
   }   
+}
+
+exports.holidays = async(req,res,next)=>{
+  try{
+    const date =  req.body.date;
+    const holiday = req.body.holiday;
+    const day = await Holiday.findOne({date:date});
+    if(day){
+      day.holiday = day.holiday+", "+holiday;
+      await day.save();
+      return res.status(204).json(day);
+    }
+    else{
+      const holi = new Holiday({
+        date:date,
+        holiday:holiday
+      });
+      holi.save();
+      return res.status(201).json(holi);
+    }
+  }
+  catch(err){
+    next(err);
+  }
 }
