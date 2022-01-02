@@ -15,17 +15,16 @@ const facultySchema = new schema({
     require:true
   },
   isAdmin:{
-    type: String,
+    type: Boolean,
     require: true,
-    default:"false"
+    default:false
   },
   batches:[{
     type:schema.Types.ObjectId,
     ref:"batch"
   }],
   subject:{
-    type:schema.Types.ObjectId,
-    ref:"subject"
+    type:String
   },
   timetable:[{
     type:schema.Types.ObjectId,
@@ -53,6 +52,6 @@ const facultySchema = new schema({
    type: Number,
    require: false,
   },
-})
+  })
 
 module.exports = mongoose.model("faculty",facultySchema);
