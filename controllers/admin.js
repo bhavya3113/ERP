@@ -280,3 +280,16 @@ exports.holidays = async(req,res,next)=>{
     next(err);
   }
 }
+exports.showHoliday = async(req,res,next)=>{
+  try{
+    Holiday.find({},"date holiday",(err,item)=>{
+      if(err){
+        throw err;
+      }
+      res.status(200).json(item);
+    }).sort({"date":1});
+  }
+  catch(err){
+    next(err);
+  }
+}

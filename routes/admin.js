@@ -19,5 +19,6 @@ router.post("/updatemodels",adminController.addBranchOrSubjectOrExam);
 
 router.post("/timetable",adminController.timetable);
 router.post("/holidays",adminController.holidays);
+router.get("/showholidays",adminController.showHoliday);
 module.exports=router;
 
