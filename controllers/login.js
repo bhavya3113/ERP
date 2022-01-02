@@ -34,12 +34,14 @@ exports.login = (req ,res ,next)=>{
             // console.log(result);
             bcrypt.compare(pass,result.password).then(item=>{
                 if(item){
+
                     console.log(result.isAdmin);
                     if((user==="admin")&&(!result.isAdmin)){
                       return res.status(302).json("user is not admin");
                     }
                     const accessToken = jwt.sign({email:email,userId:result._id},process.env.AC,{expiresIn:"150s"});
                     const refreshToken = jwt.sign({email:email,userId:result._id},process.env.RE , {expiresIn:"86400s"});
+
                     res.statusCode = 201;
                     return res.json({
                         email,
