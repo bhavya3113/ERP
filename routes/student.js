@@ -5,7 +5,8 @@ const Student = require("../models/student");
 const studentController = require("../controllers/student");
 const isAuth = require("../middleware/isAuth");
 
-router.get("/viewattendance/:student",studentController.viewAttendance);
+router.get("/viewattendance/:student",isAuth,studentController.viewAttendance);
+router.get("/viewresult/:student",isAuth,studentController.viewResult);
 
 module.exports=router;
 
