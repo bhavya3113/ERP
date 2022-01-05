@@ -7,30 +7,42 @@ const { validationResult } = require('express-validator');
 const Attendance = require("../models/attendance");
 const Result = require("../models/result");
 const Batch = require("../models/batch");
+const  excelToJson = require("convert-excel-to-json");
 
 exports.addAttendance = async (req,res,next)=>{
   try{
     const {arrayP,date,subject,arrayA} = req.body;
-    await Promise.all(arrayP.map(async (i) => {
+    for(var i=0;i<arrayP.length;i++)
+    {
      const obj ={ date: date, subject: subject, AorP:'P'};
-      const updateattendance=await Attendance.updateOne(
-        { student:i},
+      const updateattendance=await Attendance.findOneAndUpdate(
+        { student:arrayP[i]},
         {$push:{ "attendance" : [obj]}},
         {
           upsert:true
         }
      );
-    }))
-    await Promise.all(arrayA.map(async (i) => {
+    //  console.log(updateattendance);
+      updateattendance.totalP +=1;
+      updateattendance.totalpercent = (updateattendance.totalP/(updateattendance.attendance.length+1))*100;
+      // console.log(updateattendance.totalP,updateattendance.attendance.length,updateattendance.totalpercent);
+      await updateattendance.save();
+    }
+    for(var i=0;i<arrayA.length;i++)
+    {
       const obj ={ date: date, subject: subject, AorP:'A'};
-       const updateattendance=await Attendance.updateOne(
-         { student:i},
+       const updateattendance=await Attendance.findOneAndUpdate(
+         { student:arrayA[i]},
          {$push:{ "attendance" : [obj]}},
          {
            upsert:true
          }
       );
-     }))
+        updateattendance.totalpercent = (updateattendance.totalP/(updateattendance.attendance.length+1))*100;
+        // console.log(updateattendance.totalP,updateattendance.attendance.length)
+        await updateattendance.save();
+     }
+
     res.status(201).json({message:"Attendance updated"});
   }
   catch(err){
@@ -39,6 +51,7 @@ exports.addAttendance = async (req,res,next)=>{
     next();
   }
 }
+
 
 exports.addresults = async(req,res,next)=>{
   try{
@@ -63,6 +76,7 @@ exports.addresults = async(req,res,next)=>{
     next;
   }
 }
+
 
 exports.viewClass = async(req,res,next)=>{
   try{

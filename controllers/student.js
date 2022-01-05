@@ -13,7 +13,6 @@ exports.viewAttendance = async(req,res,next)=>{
   try{
     const studentid = req.params.student;
     const array=[];
-    var totalp=0,totala=0;
     const student = await Student.findById(studentid);
     const attendance = await Attendance.findOne({student:studentid});
       if(attendance == null)
@@ -34,7 +33,6 @@ exports.viewAttendance = async(req,res,next)=>{
               if(att.AorP == 'P')
               {
                 p++;
-                totalp++;
                 atobj ={
                   date: att.date,
                   status:att.AorP
@@ -43,7 +41,6 @@ exports.viewAttendance = async(req,res,next)=>{
               else if(att.AorP == 'A')
               {
                 a++;
-                totala++;
                 atobj ={
                   date: att.date,
                   status:att.AorP
@@ -64,8 +61,7 @@ exports.viewAttendance = async(req,res,next)=>{
           array.push(obj);
         }
         //))
-        const totalper = (totalp/(totalp+totala)*100);
-        array.push({totalpercent:totalper});
+        array.push({totalpresent:attendance.totalP,totalpercent:attendance.totalpercent});
       }
   return res.status(201).json(array);
 }
