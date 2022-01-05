@@ -14,10 +14,12 @@ const mongoose = require('mongoose');
 const { aggregate } = require("../models/student");
 const faculty = require("../models/faculty");
 const batch = require("../models/batch");
-const { json } = require("express/lib/response");
+const { json, attachment } = require("express/lib/response");
 const { ObjectId } = require("mongodb");
 const req = require("express/lib/request");
 const subject = require("../models/subject");
+const student = require("../models/student");
+const attendance = require("../models/attendance");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -288,6 +290,24 @@ exports.showHoliday = async(req,res,next)=>{
       }
       res.status(200).json(item);
     }).sort({"date":1});
+  }
+  catch(err){
+    next(err);
+  }
+}
+
+exports.showProfile = async (req , res, next)=>{
+  try{
+    const user =  req.query.user;
+    const id=req.params.id;
+    const userInfo = await ((user==="student")?student:faculty).findById(id);
+    if(user==="student"){
+      //error
+      await attendance.findOne({student:ObjectId(id)}).then(info=>{
+        console.log(info);
+      });
+    }
+    return res.status(201).json(userInfo);
   }
   catch(err){
     next(err);

@@ -4,7 +4,6 @@ const router = express.Router();
 const faculty = require("../models/faculty");
 const adminController = require("../controllers/admin");
 const isAuth = require("../middleware/isAuth");
-const { route } = require("express/lib/application");
 
 
 router.post("/addfaculty",isAuth,adminController.addFaculty);
@@ -20,5 +19,7 @@ router.post("/updatemodels",adminController.addBranchOrSubjectOrExam);
 router.post("/timetable",adminController.timetable);
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
+
+router.get("/showprofile/:id",adminController.showProfile);
 module.exports=router;
 
