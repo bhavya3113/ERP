@@ -7,6 +7,7 @@ const { validationResult } = require('express-validator');
 const Attendance = require("../models/attendance");
 const Result = require("../models/result");
 const Batch = require("../models/batch");
+const Announcement = require("../models/announcement")
 const  excelToJson = require("convert-excel-to-json");
 
 exports.addAttendance = async (req,res,next)=>{
@@ -59,15 +60,14 @@ exports.addresults = async(req,res,next)=>{
     const ex = await Exam.findByIdAndUpdate(exam,
       {$set:{maxMarks: maxmarks}}
     )
-    await Promise.all(array.map(async (i) => {
-      const updateresult = await Result.updateOne(
-        { student:i.student},
-        {$push:{ "scores" : [{ sem: sem, exam: exam, subject: subject, score: i.score}]}},
-        {
-          upsert:true
-        }
-     );
-    }))
+    for(var i=0;i<array.length;i++)
+    {
+      const updateresult = await Result.findOneAndUpdate(
+        { student:array[i].student},
+        { $push:{ "scores" : [{ sem: sem, exam: exam, subject: subject, score: array[i].score}]}},
+        { upsert:true}
+     )
+    }
     res.status(201).json({message:"result updated"});
   }
   catch(err){
@@ -133,3 +133,22 @@ exports.viewScores = async(req,res,next)=>{
     next();
   }
 }
+
+
+exports.makeAnnouncements = async(req,res,next)=>{
+  try{
+    const {announcement,date,annfor}=req.body;
+    const ann = new Announcement({
+      date: date,
+      description:announcement,
+      annfor:annfor
+    }) 
+    await ann.save();
+    return res.status(201).json("done");
+  }
+  catch(err){
+    if(!err.statusCode) 
+    err.statusCode = 500; 
+    next();
+  }
+} 

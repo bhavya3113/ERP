@@ -7,6 +7,6 @@ const isAuth = require("../middleware/isAuth");
 
 router.get("/viewattendance/:student",isAuth,studentController.viewAttendance);
 router.get("/viewresult/:student",isAuth,studentController.viewResult);
-
+router.get("/viewAnnouncement",studentController.viewAnnouncement); 
 module.exports=router;
 

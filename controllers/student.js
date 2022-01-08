@@ -5,6 +5,7 @@ const Exam = require("../models/exam");
 const Subject = require("../models/subject");
 const { validationResult } = require('express-validator');
 const Attendance = require("../models/attendance");
+const Announcement = require("../models/announcement")
 const Result = require("../models/result");
 const Batch = require("../models/batch");
 
@@ -90,6 +91,19 @@ exports.viewResult = async(req,res,next)=>{
         return res.status(201).json(result.scores);
       }
 }
+catch(err){
+  if(!err.statusCode)
+  err.statusCode = 500;
+  next();
+}
+}
+
+exports.viewAnnouncement= async (req,res,next)=>{
+  try{
+    const user = req.query.user; 
+    const ann = await Announcement.findOne({annfor:user}).sort({createdAt : -1})
+    return res.status(201).json(ann);
+  }
   catch(err){
     if(!err.statusCode)
     err.statusCode = 500;
