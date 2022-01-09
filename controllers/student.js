@@ -101,7 +101,10 @@ catch(err){
 exports.viewAnnouncement= async (req,res,next)=>{
   try{
     const user = req.query.user; 
-    const ann = await Announcement.findOne({annfor:user}).sort({createdAt : -1})
+    const ann = await Announcement.find({$or:[
+      {annfor:user},
+      {annfor:"both"}
+    ]}).sort({date:-1})
     return res.status(201).json(ann);
   }
   catch(err){
