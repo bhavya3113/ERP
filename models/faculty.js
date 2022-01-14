@@ -1,4 +1,6 @@
+const { type } = require("express/lib/response");
 const mongoose = require("mongoose");
+const { required } = require("nodemon/lib/config");
 const schema = mongoose.Schema;
 
 const facultySchema = new schema({
@@ -14,6 +16,9 @@ const facultySchema = new schema({
     type: String,
     require:true
   },
+  mobile:{
+    type:Number
+  },
   isAdmin:{
     type: Boolean,
     require: true,
@@ -23,6 +28,10 @@ const facultySchema = new schema({
     type:schema.Types.ObjectId,
     ref:"batch"
   }],
+  degree:{
+    type:String,
+    required:true
+  },
   subject:{
     type:String
   },
@@ -34,6 +43,11 @@ const facultySchema = new schema({
     type: String,
     //default:  path.join('images','image-noprofile.png')
   },
+  isfree:[{
+    type:Boolean,
+    default:true,
+    required:true
+  }],
   feedback:[{
     student:{ 
       type: schema.Types.ObjectId,

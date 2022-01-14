@@ -11,6 +11,7 @@ const attendanceSchema = new schema({
     subject:schema.Types.ObjectId ,
     AorP: String
   }],
+
   totalP:{
     type:Number,
     default:0

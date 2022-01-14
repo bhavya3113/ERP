@@ -14,10 +14,13 @@ const mongoose = require('mongoose');
 const { aggregate } = require("../models/student");
 const faculty = require("../models/faculty");
 const batch = require("../models/batch");
-const { json } = require("express/lib/response");
+const { json, attachment } = require("express/lib/response");
 const { ObjectId } = require("mongodb");
 const req = require("express/lib/request");
 const subject = require("../models/subject");
+const student = require("../models/student");
+const attendance = require("../models/attendance");
+const branch = require("../models/branch");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -288,6 +291,66 @@ exports.showHoliday = async(req,res,next)=>{
       }
       res.status(200).json(item);
     }).sort({"date":1});
+  }
+  catch(err){
+    next(err);
+  }
+}
+
+exports.showProfile = async(req , res, next)=>{
+  try{
+    const user =  req.query.user;
+    const id=req.params.id;
+    const userInfo = await ((user==="student")?student:faculty).findById(id);
+    if(!userInfo){
+      const err = new Error('User not define');
+      throw err;
+    }
+    if(user==="student"){
+      const att = await attendance.findOne({student:id});
+      const result = {
+        profile:userInfo,
+        att:att.totalpercent
+      }
+      return res.status(201).json(result);
+    }
+    if(user==="admin"){
+      const studentNo = await student.count();
+      const facultyNo = await faculty.count();
+      const branchNo = await branch.count();
+      const result = {
+        profile:userInfo,
+        studentNo:studentNo,
+        facultyNo:facultyNo,
+        branchNo:branchNo
+      }
+      return res.status(201).json(result);
+    }
+    return res.status(201).json(userInfo);
+  }
+  catch(err){
+    err.status=401
+    next(err);
+  }
+}
+
+// email pe @akgec.ac.in
+exports.editProfile = async(req, res, next)=>{
+  try{
+    const fullname = req.body.fullname;
+    const email = req.body.email;
+    const mobile = req.body.mobile;
+    const desig = req.body.desig;
+    const user =  req.query.user;
+    const id=req.params.id;
+    const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
+      fullname:fullname,
+      email:email,
+      mobile:mobile,
+      desig:desig
+    },{upsert:true});
+    console.log(userInfo);
+    return res.status(204).json(userInfo);
   }
   catch(err){
     next(err);
