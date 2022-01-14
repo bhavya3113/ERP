@@ -44,9 +44,9 @@ exports.login = (req ,res ,next)=>{
 
                     res.statusCode = 201;
                     return res.json({
-                      result,
-                      accessToken,
-                      refreshToken
+                        email,result,
+                        accessToken,
+                        refreshToken
                     });
                 }
                 res.status(403);
