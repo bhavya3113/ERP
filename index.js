@@ -29,7 +29,7 @@ app.use('/faculty',facultyRoutes);
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
-  const message = error.message;
+  const message = error.message||"error not define";
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });

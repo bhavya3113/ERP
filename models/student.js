@@ -39,6 +39,10 @@ const studentSchema = new schema({
       // faculty: String,
     },
   ],
+  attendance:{
+    type:schema.Types.ObjectId,
+    ref:"attendance"
+  },
   image: {
     type: String,
     //    default:  path.join('images','image-noprofile.png')
