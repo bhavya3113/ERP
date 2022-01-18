@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const app = express();
 app.use(express.json());
 dotenv.config();
-
+app.use('/image',express.static(__dirname+'/image'));
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const facultyRoutes = require("./routes/faculty");
