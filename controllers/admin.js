@@ -335,8 +335,10 @@ exports.showProfile = async(req , res, next)=>{
 }
 
 // email pe @akgec.ac.in
+
 exports.editProfile = async(req, res, next)=>{
   try{
+    const fileinfo = req.file;
     const fullname = req.body.fullname;
     const email = req.body.email;
     const mobile = req.body.mobile;
@@ -345,6 +347,7 @@ exports.editProfile = async(req, res, next)=>{
     const id=req.params.id;
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
+      image:fileinfo.path,
       email:email,
       mobile:mobile,
       desig:desig
