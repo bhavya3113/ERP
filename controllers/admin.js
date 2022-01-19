@@ -350,12 +350,12 @@ exports.editProfile = async(req, res, next)=>{
       image:fileinfo.path,
       email:email,
       mobile:mobile,
-      desig:desig
+      degree:desig
     },{upsert:true});
     console.log(userInfo);
     return res.status(204).json(userInfo);
   }
   catch(err){
-    next(err);
+    next(err); 
   }
 }
