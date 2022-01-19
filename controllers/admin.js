@@ -345,9 +345,14 @@ exports.editProfile = async(req, res, next)=>{
     const desig = req.body.desig;
     const user =  req.query.user;
     const id=req.params.id;
+    var imageurl;
+    if(fileinfo)
+    {
+      imageurl = fileinfo.path;
+    }
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
-      image:fileinfo.path,
+      image:imageurl,
       email:email,
       mobile:mobile,
       degree:desig
