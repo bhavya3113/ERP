@@ -31,6 +31,6 @@ const storage = multer.diskStorage({
 });
 let upload = multer({storage:storage});
 router.get("/showprofile/:id",adminController.showProfile);
-router.patch("/editprofile/:id",upload.single('image'),adminController.editProfile);
+router.put("/editprofile/:id",upload.single('image'),adminController.editProfile);
 module.exports=router;
 
