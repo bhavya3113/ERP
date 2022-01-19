@@ -345,9 +345,14 @@ exports.editProfile = async(req, res, next)=>{
     const degree = req.body.degree;
     const user =  req.query.user;
     const id=req.params.id;
+    var imageurl;
+    if(fileinfo)
+    {
+      imageurl = fileinfo.path;
+    }
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
-      image:fileinfo.path,
+      image:imageurl,
       email:email,
       mobile:mobile,
       degree:degree
@@ -356,6 +361,6 @@ exports.editProfile = async(req, res, next)=>{
     return res.status(204).json(userInfo);
   }
   catch(err){
-    next(err);
+    next(err); 
   }
 }
