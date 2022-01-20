@@ -10,11 +10,13 @@ app.use('/image',express.static(__dirname+'/image'));
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const facultyRoutes = require("./routes/faculty");
+const studentRoutes = require("./routes/student");
 const mongoose = require("mongoose");
 
 app.use('/auth',authRoutes);
 app.use('/admin',adminRoutes);
 app.use('/faculty',facultyRoutes);
+app.use('/student',studentRoutes);
 // error handler
 app.use((error, req, res, next) => {
   console.log(error);

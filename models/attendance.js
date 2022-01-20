@@ -11,11 +11,12 @@ const attendanceSchema = new schema({
     subject:schema.Types.ObjectId ,
     AorP: String
   }],
-  totalpercent:Number,
+
   totalP:{
     type:Number,
     default:0
-  }
+  },
+  totalpercent:Number
 })
 
 module.exports = mongoose.model("attendance",attendanceSchema);
