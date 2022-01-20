@@ -158,13 +158,21 @@ exports.viewScores = async(req,res,next)=>{
 
 exports.makeAnnouncements = async(req,res,next)=>{
   try{
-    const {announcement,date,annfor}=req.body;
+    const {announcement,date,annfor,time}=req.body;
+    const id = req.params.id;
     const ann = new Announcement({
       date: date,
+      time:time,
       description:announcement,
       annfor:annfor
     }) 
     await ann.save();
+    const fac = await Faculty.findByIdAndUpdate(id,{
+      $push:{
+        announcement: ann,
+        $sort: { createdAt : -1 },
+     }}
+    )
     return res.status(201).json("done");
   }
   catch(err){
@@ -173,3 +181,34 @@ exports.makeAnnouncements = async(req,res,next)=>{
     next();
   }
 } 
+
+exports.deleteAnnouncements = async(req,res,next)=>{
+  try{
+    const annid=req.params.annid;
+    const facid = req.params.facid
+    const ann = await Announcement.findByIdAndRemove(annid);
+    const fac = await Faculty.findOneAndUpdate(
+      {_id:facid},
+      {$pull:{ announcement: annid }}
+    )
+    return res.status(202).json("deleted");
+  }
+  catch(err){
+    if(!err.statusCode) 
+    err.statusCode = 500; 
+    next();
+  }
+} 
+
+exports.viewyourann = async(req,res,next)=>{
+  try{
+    const id = req.params.id;
+    const fac = await Faculty.findById(id).populate('announcement');
+    return res.status(202).json({ann:fac.announcement});
+  }
+  catch(err){
+    if(!err.statusCode) 
+    err.statusCode = 500; 
+    next();
+  }
+}

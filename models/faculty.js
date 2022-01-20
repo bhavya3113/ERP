@@ -66,6 +66,10 @@ const facultySchema = new schema({
    type: Number,
    require: false,
   },
+  announcement:[{
+    type: schema.Types.ObjectId,
+    ref:'announcement'
+  }]
   })
 
 module.exports = mongoose.model("faculty",facultySchema);
