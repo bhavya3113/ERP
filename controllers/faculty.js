@@ -57,23 +57,44 @@ exports.addAttendance = async (req,res,next)=>{
 exports.addresults = async(req,res,next)=>{
   try{
     const {sem,exam,subject,array,maxmarks} = req.body;
+    // if(1)
+    // {
+          // const f = req.body.file;
+          // const sheet = excelToJson({
+          // sourceFile: f,
+          // // Header Row -> be skipped and will not be present at our result object.
+          // header:{
+          //         rows: 1
+          //     },
+          // // Mapping columns to keys
+    //           columnToKey: {
+    //             A: 'rollno',
+    //             B: 'name',
+    //             C: 'score'
+    //             }
+    //           }
+    //       );
+    
+    // const array = sheet.Marks;
+    // // }
     const ex = await Exam.findByIdAndUpdate(exam,
       {$set:{maxMarks: maxmarks}}
     )
     for(var i=0;i<array.length;i++)
     {
+      const stu = await Student.findOne({rollno:array[i].rollno});
       const updateresult = await Result.findOneAndUpdate(
-        { student:array[i].student},
+        { student:stu._id},
         { $push:{ "scores" : [{ sem: sem, exam: exam, subject: subject, score: array[i].score}]}},
         { upsert:true}
-     )
+      )
     }
     res.status(201).json({message:"result updated"});
   }
   catch(err){
     if(!err.statusCode)
     err.statusCode =500;
-    next;
+    next();
   }
 }
 
