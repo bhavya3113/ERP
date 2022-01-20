@@ -342,7 +342,7 @@ exports.editProfile = async(req, res, next)=>{
     const fullname = req.body.fullname;
     const email = req.body.email;
     const mobile = req.body.mobile;
-    const desig = req.body.desig;
+    const degree = req.body.degree;
     const user =  req.query.user;
     const id=req.params.id;
     var imageurl;
@@ -355,7 +355,7 @@ exports.editProfile = async(req, res, next)=>{
       image:imageurl,
       email:email,
       mobile:mobile,
-      degree:desig
+      degree:degree
     },{upsert:true});
     console.log(userInfo);
     return res.status(204).json(userInfo);
