@@ -103,13 +103,13 @@ exports.viewAnnouncement= async (req,res,next)=>{
     const user = req.query.user; 
     if(user=="admin")
     {
-      const ann = await Announcement.find({}).sort({date:-1})
+      const ann = await Announcement.find({}).sort({createdAt:-1})
       return res.status(201).json(ann);
     }
     const ann = await Announcement.find({$or:[
       {annfor:user},
       {annfor:"both"}
-    ]}).sort({date:-1})
+    ]}).sort({createdAt:-1})
     return res.status(201).json(ann);
   }
   catch(err){
