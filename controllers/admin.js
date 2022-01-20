@@ -335,24 +335,32 @@ exports.showProfile = async(req , res, next)=>{
 }
 
 // email pe @akgec.ac.in
+
 exports.editProfile = async(req, res, next)=>{
   try{
+    const fileinfo = req.file;
     const fullname = req.body.fullname;
     const email = req.body.email;
     const mobile = req.body.mobile;
-    const desig = req.body.desig;
+    const degree = req.body.degree;
     const user =  req.query.user;
     const id=req.params.id;
+    var imageurl;
+    if(fileinfo)
+    {
+      imageurl = fileinfo.path;
+    }
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
+      image:imageurl,
       email:email,
       mobile:mobile,
-      desig:desig
+      degree:degree
     },{upsert:true});
     console.log(userInfo);
     return res.status(204).json(userInfo);
   }
   catch(err){
-    next(err);
+    next(err); 
   }
 }

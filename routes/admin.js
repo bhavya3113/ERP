@@ -20,7 +20,17 @@ router.post("/timetable",adminController.timetable);
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
 
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination:(req ,file ,cb)=>{
+        cb(null ,'image')
+    },
+    filename: (req,file ,cb)=>{
+        cb(null ,file.originalname);
+    }
+});
+let upload = multer({storage:storage});
 router.get("/showprofile/:id",adminController.showProfile);
-router.patch("/editprofile/:id",adminController.editProfile);
+router.put("/editprofile/:id",upload.single('image'),adminController.editProfile);
 module.exports=router;
 
