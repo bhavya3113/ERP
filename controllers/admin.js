@@ -347,11 +347,10 @@ exports.editProfile = async(req, res, next)=>{
     const user =  req.query.user;
     const id=req.params.id;
     var imageurl;
-    // if(fileinfo)
-    // {
+    if(fileinfo)
+     {
       imageurl = fileinfo.path;
-    // }
-    
+     }
     console.log(imageurl,fileinfo);
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
@@ -359,7 +358,7 @@ exports.editProfile = async(req, res, next)=>{
       email:email,
       mobile:mobile,
       degree:degree
-    },{upsert:true});
+    },{upsert:true,omitUndefined: true});
     console.log(userInfo);
     return res.status(204).json(userInfo);
   }
