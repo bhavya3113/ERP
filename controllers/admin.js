@@ -21,6 +21,7 @@ const subject = require("../models/subject");
 const student = require("../models/student");
 const attendance = require("../models/attendance");
 const branch = require("../models/branch");
+const path = require("path");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -346,10 +347,12 @@ exports.editProfile = async(req, res, next)=>{
     const user =  req.query.user;
     const id=req.params.id;
     var imageurl;
-    if(fileinfo)
-    {
+    // if(fileinfo)
+    // {
       imageurl = fileinfo.path;
-    }
+    // }
+    
+    console.log(imageurl,fileinfo);
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
       image:imageurl,
