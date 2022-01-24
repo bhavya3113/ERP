@@ -6,7 +6,7 @@ const adminController = require("../controllers/admin");
 const isAuth = require("../middleware/isAuth");
 
 
-router.post("/addfaculty",adminController.addFaculty);
+router.post("/addfaculty",isAuth,adminController.addFaculty);
 router.post("/addstudents",isAuth,adminController.addStudents);
 // router.get("/addbranches",adminController.addBranches);
 router.get("/viewbranches",adminController.viewBranches);
@@ -19,6 +19,7 @@ router.post("/updatemodels",adminController.addBranchOrSubjectOrExam);
 router.post("/timetable",adminController.timetable);
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
+router.post("/makeadmin",isAuth,adminController.makeAdmin);
 
 const multer = require('multer');
 const storage = multer.diskStorage({

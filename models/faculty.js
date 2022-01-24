@@ -30,7 +30,6 @@ const facultySchema = new schema({
   }],
   degree:{
     type:String,
-    required:true
   },
   subject:{
     type:String

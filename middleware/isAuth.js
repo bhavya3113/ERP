@@ -20,7 +20,8 @@ module.exports = (req, res, next) => {
             error.statusCode = 401;
             throw error; 
           }
-          req.userId=decode.userId;
-          next();
+        req.userId=decode.userId;
+        req.emaill=decode.email;
+        next();
     }
 };

@@ -32,7 +32,8 @@ exports.addFaculty = async (req,res,next)=>{
       throw error;
     }
     const admin = await Faculty.findById(req.userId);
-    if(!admin || admin.isAdmin=="false")
+    console.log(admin.isAdmin);
+    if(admin.isAdmin=="false")
     {
       const err = new Error('Not an Admin');
       err.statusCode = 422;
@@ -57,6 +58,9 @@ exports.addFaculty = async (req,res,next)=>{
     const hashedPswrd = await bcrypt.hash(password, 12);
     req.body.password = hashedPswrd;
     const newFaculty = new Faculty(req.body);
+    for(var i= 0 ; i < 6 ; i++){
+      newFaculty.isfree[i] = true;
+    }
     await newFaculty.save();
     res.status(201).json({Message : "Faculty Successfully Registred. Email sent."});
     return mail.sendRegMail(email,password,fullname);
@@ -362,5 +366,26 @@ exports.editProfile = async(req, res, next)=>{
   }
   catch(err){
     next(err); 
+  }
+}
+exports.makeAdmin = async( req, res, next )=>{
+  const email = req.emaill;
+  const userEmail = req.body.email;
+  if(email==="admin@akgec.ac.in"){
+    const user = await Faculty.findOne({email:userEmail});
+    console.log(user.isAdmin);
+    if(user.isAdmin==true){
+      user.isAdmin = false;
+      user.save();
+      return res.status(201).json(`Now ${userEmail} is not admin`);
+    }
+    else{
+      user.isAdmin = true;
+      user.save();
+      return res.status(301).json(`Now ${userEmail} is admin`);
+    }
+  }
+  else{
+    return res.status(403).json("user is not authorized");
   }
 }
