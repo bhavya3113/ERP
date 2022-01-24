@@ -29,7 +29,7 @@ const facultySchema = new schema({
     ref:"batch"
   }],
   degree:{
-    type:String
+    type:String,
   },
   subject:{
     type:String
