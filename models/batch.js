@@ -21,7 +21,10 @@ const batchSchema = new schema({
   timetable:[{
     type:schema.Types.ObjectId,
     ref:"stutimetable"
-  }]  
+  }],
+  year:{
+    type:Number
+  }
 })
 
 module.exports = mongoose.model("batch",batchSchema);

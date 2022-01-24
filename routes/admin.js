@@ -20,6 +20,7 @@ router.post("/timetable",adminController.timetable);
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
 router.post("/makeadmin",isAuth,adminController.makeAdmin);
+router.get("/viewbatch",adminController.viewBatch);
 
 const multer = require('multer');
 const storage = multer.diskStorage({

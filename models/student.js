@@ -15,12 +15,10 @@ const studentSchema = new schema({
     require: true,
   },
   sem: {
-    type: Number,
-    require: true,
+    type: String,
   },
   year: {
     type: Number,
-    require: true,
   },
   branch: {
     type: String,

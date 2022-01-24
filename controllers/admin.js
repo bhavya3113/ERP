@@ -13,9 +13,9 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const { aggregate } = require("../models/student");
 const faculty = require("../models/faculty");
-const batch = require("../models/batch");
+const Batchs = require("../models/batch");
 const { json, attachment } = require("express/lib/response");
-const { ObjectId } = require("mongodb");
+const { ObjectId, Batch } = require("mongodb");
 const req = require("express/lib/request");
 const subject = require("../models/subject");
 const student = require("../models/student");
@@ -388,4 +388,11 @@ exports.makeAdmin = async( req, res, next )=>{
   else{
     return res.status(403).json("user is not authorized");
   }
+}
+
+exports.viewBatch =async (req , res, next)=>{
+  const batch = req.query.batch;
+  const year = parseInt(req.query.year);
+  const result = await Batchs.find({batchName:batch,year:year},'batchName students').populate('students',{name:'$fullname',roll:"$rollno",email:"$email"});
+  return res.json(result);
 }
