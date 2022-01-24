@@ -366,3 +366,17 @@ exports.editProfile = async(req, res, next)=>{
     next(err); 
   }
 }
+
+exports.batchlist = async(req,res,next)=>{
+  try{
+    const year = req.body.year;
+    const bat = await batch.aggregate([{$match:{"year":year}},{ $group: {_id: "$batchName"} }
+    ]);
+    return res.status(201).json(bat);
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode = 500;
+    next();
+  }
+}

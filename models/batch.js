@@ -6,6 +6,7 @@ const batchSchema = new schema({
     type: String,
     require:true
   },
+  year:Number,
   sem: {
     type: Number,
     require: true,
