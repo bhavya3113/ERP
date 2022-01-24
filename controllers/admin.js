@@ -88,13 +88,15 @@ exports.addStudents = async (req,res,next)=>{
       err.statusCode = 422;
       throw err;
     }
-    const {array,password}= req.body;
+    const {array,password,year,batch}= req.body;
     const hashedPswrd = await bcrypt.hash(password, 12);
 
-    await Student.insertMany(array);
 
-    for(var i=0;i<array.length;i++)
+    for(var i=0;i<array.length;i++){
       mail.sendRegMail(array[i].email,array[i].password,array[i].fullname);
+      array[i].rollno=year
+    }
+    await Student.insertMany(array);  
     return res.status(201).json({Message : "Student Successfully Registred. Email sent."});
   }
   catch(err){
@@ -369,30 +371,44 @@ exports.editProfile = async(req, res, next)=>{
   }
 }
 exports.makeAdmin = async( req, res, next )=>{
-  const email = req.emaill;
-  const userEmail = req.body.email;
-  if(email==="admin@akgec.ac.in"){
-    const user = await Faculty.findOne({email:userEmail});
-    console.log(user.isAdmin);
-    if(user.isAdmin==true){
-      user.isAdmin = false;
-      user.save();
-      return res.status(201).json(`Now ${userEmail} is not admin`);
+  try{
+    const email = req.emaill;
+    const userEmail = req.body.email;
+    if(email==="admin@akgec.ac.in"){
+      const user = await Faculty.findOne({email:userEmail});
+      console.log(user.isAdmin);
+      if(user.isAdmin==true){
+        user.isAdmin = false;
+        user.save();
+        return res.status(201).json(`Now ${userEmail} is not admin`);
+      }
+      else{
+        user.isAdmin = true;
+        user.save();
+        return res.status(301).json(`Now ${userEmail} is admin`);
+      }
     }
     else{
-      user.isAdmin = true;
-      user.save();
-      return res.status(301).json(`Now ${userEmail} is admin`);
+      return res.status(403).json("user is not authorized");
     }
   }
-  else{
-    return res.status(403).json("user is not authorized");
+  catch(err){
+    next(err);
   }
 }
 
 exports.viewBatch =async (req , res, next)=>{
-  const batch = req.query.batch;
-  const year = parseInt(req.query.year);
-  const result = await Batchs.find({batchName:batch,year:year},'batchName students').populate('students',{name:'$fullname',roll:"$rollno",email:"$email"});
-  return res.json(result);
+  try{
+    const batch = req.query.batch;
+    const year = parseInt(req.query.year);
+    const result = await Batchs.find({batchName:batch,year:year},'batchName students').populate('students',{name:'$fullname',roll:"$rollno",email:"$email"});
+    if(!result){
+      const err = new Error('No batches found');
+      throw err;
+    }
+    return res.status(200).json(result[0]);
+  }
+  catch(err){
+    next(err);
+  }
 }
