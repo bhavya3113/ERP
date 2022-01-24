@@ -369,8 +369,9 @@ exports.editProfile = async(req, res, next)=>{
 
 exports.batchlist = async(req,res,next)=>{
   try{
-    const year = req.body.year;
-    const bat = await batch.aggregate([{$match:{"year":year}},{ $group: {_id: "$batchName"} }
+    const year = req.params.year;
+    const yr= parseInt(year);
+    const bat = await batch.aggregate([{$match:{"year":yr}},{ $group: {_id: "$batchName"} }
     ]);
     return res.status(201).json(bat);
   }

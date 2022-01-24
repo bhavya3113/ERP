@@ -19,7 +19,7 @@ router.post("/updatemodels",adminController.addBranchOrSubjectOrExam);
 router.post("/timetable",adminController.timetable);
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
-router.get("/getbatch",adminController.batchlist);
+router.get("/getbatch/:year",adminController.batchlist);
 const multer = require('multer');
 const storage = multer.diskStorage({
     destination:(req ,file ,cb)=>{
