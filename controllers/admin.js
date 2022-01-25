@@ -164,12 +164,24 @@ exports.removeStudents = async (req,res,next)=>{
       err.statusCode = 422;
       throw err;
     }
+    const user = req.query.user;
     const id= req.params.id;
-    const stu = await Student.findByIdAndRemove(id);
-    const bat = await Batch.findOneAndUpdate(
-      {batchName:stu.batch , year:stu.year},
-      {$pull:{ students: id }}
-    )
+
+    if(user == "student"){
+      const stu = await Student.findByIdAndRemove(id);
+      if(!stu)
+        return res.status(400).json("Student not found");
+      const bat = await Batch.findOneAndUpdate(
+        {batchName:stu.batch , year:stu.year},
+        {$pull:{ students: id }}
+      )
+      
+    }
+    else{
+      const fac = await Faculty.findByIdAndRemove(id);
+      if(!fac)
+        return res.status(400).json("faculty not found");   
+    }
     return res.status(202).json("deleted");
   }
   catch(err){
