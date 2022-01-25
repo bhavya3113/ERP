@@ -7,6 +7,9 @@ const isAuth = require("../middleware/isAuth");
 
 
 router.post("/addfaculty",isAuth,adminController.addFaculty);
+
+router.post("/addbatch",isAuth,adminController.addnewbatch);
+router.delete("/deletestudent/:id",isAuth,adminController.removeStudents);
 router.post("/addstudents",isAuth,adminController.addStudents);
 // router.get("/addbranches",adminController.addBranches);
 router.get("/viewbranches",adminController.viewBranches);
@@ -21,6 +24,7 @@ router.post("/savetimetable",adminController.saveTimetable);
 
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
+router.get("/getbatch/:year",adminController.batchlist);
 router.post("/makeadmin",isAuth,adminController.makeAdmin);
 router.get("/viewbatch",adminController.viewBatch);
 

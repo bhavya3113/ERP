@@ -13,14 +13,14 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const { aggregate } = require("../models/student");
 const faculty = require("../models/faculty");
-const Batchs = require("../models/batch");
+const Batch = require("../models/batch");
 const { json, attachment } = require("express/lib/response");
-const { ObjectId, Batch } = require("mongodb");
 const req = require("express/lib/request");
 const subject = require("../models/subject");
 const student = require("../models/student");
 const attendance = require("../models/attendance");
 const branch = require("../models/branch");
+const path = require("path");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -71,7 +71,36 @@ exports.addFaculty = async (req,res,next)=>{
       next(err);
   }
 }
-
+exports.addnewbatch = async (req,res,next)=>{
+  try{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed, entered data is incorrect.');
+      error.statusCode = 422;
+      throw error;
+    }
+    const admin = await Faculty.findById(req.userId);
+    if(!admin || admin.isAdmin=="false")
+    {
+      const err = new Error('Not an Admin');
+      err.statusCode = 422;
+      throw err;
+    }
+    const {year,batch,sem}= req.body;
+    const newbatch = new Batch({
+      batchName: batch,
+      sem: sem,
+      year: year
+    })
+    await newbatch.save();
+    return res.status(201).json("new batch added");
+  }
+  catch(err){
+    if(!err.statusCode)
+      err.statusCode=500;
+      next(err);
+  }
+}
 //to add a new batch of students
 exports.addStudents = async (req,res,next)=>{
   try{
@@ -88,16 +117,72 @@ exports.addStudents = async (req,res,next)=>{
       err.statusCode = 422;
       throw err;
     }
-    const {array,password,year,batch}= req.body;
+    const {array,password,year,batch,sem}= req.body;
     const hashedPswrd = await bcrypt.hash(password, 12);
 
-
+    const bat = await Batch.findOne({"year":year,"batch":batch})
+    
     for(var i=0;i<array.length;i++){
-      mail.sendRegMail(array[i].email,array[i].password,array[i].fullname);
-      array[i].rollno=year
+      mail.sendRegMail(array[i].email,password,array[i].fullname);
+      array[i].rollno=year+`${batch.charCodeAt()}`+bat.students.length;
+      console.log(batch.charCodeAt(),array[i].rollno);
     }
     await Student.insertMany(array);  
+    for(var i=0;i<array.length;i++){
+      const stu = await Student.findOneAndUpdate({"rollno":array[i].rollno},
+        {$set:{
+            "password": hashedPswrd,
+            "year":year,
+            "batch":batch,
+            "sem":sem
+          }}
+      );
+      bat.students.push(stu);
+    }
+    await bat.save();
     return res.status(201).json({Message : "Student Successfully Registred. Email sent."});
+  }
+  catch(err){
+    if(!err.statusCode)
+      err.statusCode=500;
+      next(err);
+  }
+}
+
+exports.removeStudents = async (req,res,next)=>{
+  try{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed, entered data is incorrect.');
+      error.statusCode = 422;
+      throw error;
+    }
+    const admin = await Faculty.findById(req.userId);
+    if(!admin || admin.isAdmin=="false")
+    {
+      const err = new Error('Not an Admin');
+      err.statusCode = 422;
+      throw err;
+    }
+    const user = req.query.user;
+    const id= req.params.id;
+
+    if(user == "student"){
+      const stu = await Student.findByIdAndRemove(id);
+      if(!stu)
+        return res.status(400).json("Student not found");
+      const bat = await Batch.findOneAndUpdate(
+        {batchName:stu.batch , year:stu.year},
+        {$pull:{ students: id }}
+      )
+      
+    }
+    else{
+      const fac = await Faculty.findByIdAndRemove(id);
+      if(!fac)
+        return res.status(400).json("faculty not found");   
+    }
+    return res.status(202).json("deleted");
   }
   catch(err){
     if(!err.statusCode)
@@ -377,16 +462,17 @@ exports.editProfile = async(req, res, next)=>{
     const id=req.params.id;
     var imageurl;
     if(fileinfo)
-    {
+     {
       imageurl = fileinfo.path;
-    }
+     }
+    console.log(imageurl,fileinfo);
     const userInfo = await ((user==="student")?student:faculty).findByIdAndUpdate(id,{
       fullname:fullname,
       image:imageurl,
       email:email,
       mobile:mobile,
       degree:degree
-    },{upsert:true});
+    },{upsert:true,omitUndefined: true});
     console.log(userInfo);
     return res.status(204).json(userInfo);
   }
@@ -394,6 +480,22 @@ exports.editProfile = async(req, res, next)=>{
     next(err); 
   }
 }
+
+exports.batchlist = async(req,res,next)=>{
+  try{
+    const year = req.params.year;
+    const yr= parseInt(year);
+    const bat = await Batch.aggregate([{$match:{"year":yr}},{ $group: {_id: "$batchName"} }
+    ]);
+    return res.status(201).json(bat);
+  }
+  catch(err){
+    if(!err.statusCode)
+    err.statusCode = 500;
+    next();
+  }
+}
+
 exports.makeAdmin = async( req, res, next )=>{
   try{
     const email = req.emaill;
@@ -425,7 +527,7 @@ exports.viewBatch =async (req , res, next)=>{
   try{
     const batch = req.query.batch;
     const year = parseInt(req.query.year);
-    const result = await Batchs.find({batchName:batch,year:year},'batchName students').populate('students',{name:'$fullname',roll:"$rollno",email:"$email"});
+    const result = await Batch.find({batchName:batch,year:year},'batchName students').populate('students',{name:'$fullname',roll:"$rollno",email:"$email"});
     if(!result){
       const err = new Error('No batches found');
       throw err;
