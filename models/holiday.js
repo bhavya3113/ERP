@@ -3,7 +3,7 @@ const schema = mongoose.Schema;
 
 const holidaySchema = new schema({
   date:{
-    type:String
+    type:Date
   },
   holiday:{
     type:String
