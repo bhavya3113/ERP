@@ -17,6 +17,8 @@ router.get("/viewexams",adminController.viewExams);
 router.post("/updatemodels",adminController.addBranchOrSubjectOrExam);
 
 router.post("/timetable",adminController.timetable);
+router.post("/savetimetable",adminController.saveTimetable);
+
 router.post("/holidays",adminController.holidays);
 router.get("/showholidays",adminController.showHoliday);
 router.post("/makeadmin",isAuth,adminController.makeAdmin);

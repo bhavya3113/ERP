@@ -250,7 +250,7 @@ exports.timetable = async(req,res,next)=>{
   try{
     const batchname = req.body.batchname;
     const arr = [];
-    result = await batch.findOne({batchName:batchname});
+    result = await Batchs.findOne({batchName:batchname});
     let s=[];
     for(let i = 0 ; i < result.subjects.length;i++){
       const sub = await subject.findById({_id:result.subjects[i]});
@@ -264,6 +264,30 @@ exports.timetable = async(req,res,next)=>{
   catch(err){
     next(err);
   }   
+}
+
+exports.saveTimetable = async(req , res ,next)=>{
+  try{
+    const array = req.body.array;
+    for(var i = 0 ; i < array.length ;i++){
+      await Faculty.findById(array[i].id).then(user=>{
+        if(!user){
+          console.log("No teacher found");
+        }
+        else{
+          user.isfree[i] = false;
+          user.save();
+        }
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    }
+    return res.status(203).json("updated");
+  }
+  catch(err){
+    next(err);
+  }
 }
 
 exports.holidays = async(req,res,next)=>{
