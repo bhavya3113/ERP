@@ -9,6 +9,7 @@ const isAuth = require("../middleware/isAuth");
 router.post("/addfaculty",isAuth,adminController.addFaculty);
 
 router.post("/addbatch",isAuth,adminController.addnewbatch);
+router.delete("/deletestudent/:id",isAuth,adminController.removeStudents);
 router.post("/addstudents",isAuth,adminController.addStudents);
 // router.get("/addbranches",adminController.addBranches);
 router.get("/viewbranches",adminController.viewBranches);

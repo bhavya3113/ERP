@@ -120,19 +120,57 @@ exports.addStudents = async (req,res,next)=>{
     const {array,password,year,batch,sem}= req.body;
     const hashedPswrd = await bcrypt.hash(password, 12);
 
+    const bat = await Batch.findOne({"year":year,"batch":batch})
     
     for(var i=0;i<array.length;i++){
-      mail.sendRegMail(array[i].email,array[i].password,array[i].fullname);
-      array[i].rollno=year
+      mail.sendRegMail(array[i].email,password,array[i].fullname);
+      array[i].rollno=year+`${batch.charCodeAt()}`+bat.students.length;
+      console.log(batch.charCodeAt(),array[i].rollno);
     }
     await Student.insertMany(array);  
-    const bat = await Batch.findOne({"year":year,"batch":batch})
     for(var i=0;i<array.length;i++){
-      const stu = await Student.findOne({"rollno":array[i].rollno});
+      const stu = await Student.findOneAndUpdate({"rollno":array[i].rollno},
+        {$set:{
+            "password": hashedPswrd,
+            "year":year,
+            "batch":batch,
+            "sem":sem
+          }}
+      );
       bat.students.push(stu);
     }
     await bat.save();
     return res.status(201).json({Message : "Student Successfully Registred. Email sent."});
+  }
+  catch(err){
+    if(!err.statusCode)
+      err.statusCode=500;
+      next(err);
+  }
+}
+
+exports.removeStudents = async (req,res,next)=>{
+  try{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed, entered data is incorrect.');
+      error.statusCode = 422;
+      throw error;
+    }
+    const admin = await Faculty.findById(req.userId);
+    if(!admin || admin.isAdmin=="false")
+    {
+      const err = new Error('Not an Admin');
+      err.statusCode = 422;
+      throw err;
+    }
+    const id= req.params.id;
+    const stu = await Student.findByIdAndRemove(id);
+    const bat = await Batch.findOneAndUpdate(
+      {batchName:stu.batch , year:stu.year},
+      {$pull:{ students: id }}
+    )
+    return res.status(202).json("deleted");
   }
   catch(err){
     if(!err.statusCode)
