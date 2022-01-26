@@ -1,12 +1,12 @@
 const express = require('express');
-
+const path = require("path");
 const dotenv = require('dotenv')
 const app = express();
 const cors = require('cors');
 app.use(express.json());
 dotenv.config();
 app.use(cors());
-app.use('/image',express.static(__dirname+'/image'));
+app.use('/image',express.static(path.join(__dirname, 'image')));
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const facultyRoutes = require("./routes/faculty");

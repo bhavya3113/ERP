@@ -99,18 +99,6 @@ exports.addresults = async(req,res,next)=>{
 }
 
 
-exports.viewClass = async(req,res,next)=>{
-  try{
-    const batchid = req.params.batch;
-    const batch = await Batch.findById(batchid).populate('students');
-    return res.status(201).json(batch);
-  }
-  catch(err){
-    if(!err.statusCode)
-    err.statusCode = 500;
-    next();
-  }
-}
 
 
 exports.viewScores = async(req,res,next)=>{
