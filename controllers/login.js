@@ -39,8 +39,8 @@ exports.login = (req ,res ,next)=>{
                     if((user==="admin")&&(!result.isAdmin)){
                       return res.status(302).json("user is not admin");
                     }
-                    const accessToken = jwt.sign({email:email,userId:result._id},process.env.AC,{expiresIn:"150s"});
-                    const refreshToken = jwt.sign({email:email,userId:result._id},process.env.RE , {expiresIn:"86400s"});
+                    const accessToken = jwt.sign({email:email,userId:result._id},process.env.AC,{expiresIn:"1d"});
+                    const refreshToken = jwt.sign({email:email,userId:result._id},process.env.RE , {expiresIn:"1d"});
 
                     res.statusCode = 201;
                     return res.json({

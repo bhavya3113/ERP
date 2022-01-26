@@ -21,6 +21,7 @@ const subject = require("../models/subject");
 const student = require("../models/student");
 const attendance = require("../models/attendance");
 const branch = require("../models/branch");
+const result = require("../models/result");
 
 //to add a new faculty
 exports.addFaculty = async (req,res,next)=>{
@@ -268,20 +269,27 @@ exports.timetable = async(req,res,next)=>{
 
 exports.saveTimetable = async(req , res ,next)=>{
   try{
+    const batch = req.body.batch;
+    const year = parseInt(req.body.year);
+    const del = req.body.del;
+    const result = await Batchs.findOne({batchName:batch,year:year});
     const array = req.body.array;
     for(var i = 0 ; i < array.length ;i++){
-      await Faculty.findById(array[i].id).then(user=>{
+     const user =  await Faculty.findById(array[i].id);
         if(!user){
           console.log("No teacher found");
         }
         else{
-          user.isfree[i] = false;
+          if(del=="delete"){
+            user.isfree= true;
+            await Faculty.findOneAndUpdate({_id:array[i].id},{$pull:{batches:result.id}});
+          }
+          else {
+            user.isfree[i] = false;
+            user.batches.push(result);
+          }  
           user.save();
         }
-      })
-      .catch(err=>{
-        console.log(err);
-      })
     }
     return res.status(203).json("updated");
   }
