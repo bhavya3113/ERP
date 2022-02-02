@@ -3,8 +3,7 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
     const authHeader = req.get('Authorization');
     if (!authHeader) {
-        res.statusCode = 401
-        return res.json('token required')
+        return res.status(420).json('token required')
     }
     else{
         try{
@@ -12,12 +11,12 @@ module.exports = (req, res, next) => {
             var decode = jwt.verify(token,process.env.AC);
         }
         catch(err){
-            err.status=403;
+            err.statusCode=450;
             throw err;
         }
         if (!decode) {
             const error = new Error('Not authenticated.');
-            error.statusCode = 401;
+            error.statusCode = 420;
             throw error; 
           }
         req.userId=decode.userId;
