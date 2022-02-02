@@ -120,12 +120,12 @@ exports.addStudents = async (req,res,next)=>{
     }
     const {array,password,year,batch,sem}= req.body;
     const hashedPswrd = await bcrypt.hash(password, 12);
-
-    const bat = await Batch.findOne({"year":year,"batch":batch})
-    
+    const bat = await Batch.findOne({"batchName":batch,"year":year})
+   // console.log(bat);
     for(var i=0;i<array.length;i++){
       mail.sendRegMail(array[i].email,password,array[i].fullname);
-      array[i].rollno=year+`${batch.charCodeAt()}`+bat.students.length;
+      var x=bat.students.length+i;
+      array[i].rollno=year+`${batch.charCodeAt()}`+x;
       console.log(batch.charCodeAt(),array[i].rollno);
     }
     await Student.insertMany(array);  
