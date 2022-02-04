@@ -506,10 +506,12 @@ exports.batchlist = async(req,res,next)=>{
 
 exports.makeAdmin = async( req, res, next )=>{
   try{
-    const email = req.emaill;
     const userEmail = req.body.email;
-    if(email==="admin@akgec.ac.in"){
+    
       const user = await Faculty.findOne({email:userEmail});
+      if(!user){
+        return res.status(404).json('not found');
+      }
       console.log(user.isAdmin);
       if(user.isAdmin==true){
         user.isAdmin = false;
@@ -521,10 +523,6 @@ exports.makeAdmin = async( req, res, next )=>{
         user.save();
         return res.status(301).json(`Now ${userEmail} is admin`);
       }
-    }
-    else{
-      return res.status(403).json("user is not authorized");
-    }
   }
   catch(err){
     next(err);
