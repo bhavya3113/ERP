@@ -78,7 +78,55 @@ exports.viewResult = async(req,res,next)=>{
   try{
     const userid = req.params.student;
     // const userid = req.userId;
-    const student = await Student.findById(userid);
+    const result = await Result.findOne({student:userid}).populate('student','sem');
+    const sem  = parseInt(result.student.sem);
+      if(result == null)
+      {
+        const err = new Error('No record found');
+        err.statusCode = 400;
+        throw err;
+      }
+      else
+      {
+        var array=[];
+        var totsco =0;
+        var maxsco =0;
+        for(var i=1;i<=sem;i++)
+        {
+          var totsco =0;
+          var maxsco =0; 
+          // console.log(sem,result.scores)
+           result.scores.filter(sco=>{
+            if(sco.sem == i)
+              {
+                totsco+=sco.score;
+                maxsco+=sco.maxmarks;
+              }
+          });
+          const per = (totsco*100)/maxsco;
+          obj={
+            sem:i,
+            marks:totsco,
+            total:maxsco,
+            percent:per.toFixed(1)
+          }
+          array.push(obj);
+        }
+        return res.status(201).json(array);
+      }
+}
+catch(err){
+  if(!err.statusCode)
+  err.statusCode = 500;
+  next();
+}
+}
+
+//to view marks per subject per exam per sem
+exports.viewResultExamwise = async(req,res,next)=>{
+  try{
+    const userid = req.params.student;
+    const {sem,exam} = req.query;
     const result = await Result.findOne({student:userid});
       if(result == null)
       {
@@ -88,7 +136,18 @@ exports.viewResult = async(req,res,next)=>{
       }
       else
       {
-        return res.status(201).json(result.scores);
+        var array=[];
+        result.scores.filter(sco=>{
+        if(sco.sem == sem && sco.exam==exam)
+        {
+          obj={
+            marks:sco.score,
+            subject:sco.subject,
+          }
+          array.push(obj);    
+          }});
+          
+        return res.status(201).json(array);
       }
 }
 catch(err){
@@ -97,6 +156,7 @@ catch(err){
   next();
 }
 }
+
 
 exports.viewAnnouncement= async (req,res,next)=>{
   try{

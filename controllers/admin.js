@@ -431,11 +431,21 @@ exports.showProfile = async(req , res, next)=>{
     }
     if(user==="student"){
       const att = await attendance.findOne({student:id});
-      const result = {
+      if(att != null)
+      {
+        const result = {
         profile:userInfo,
-        att:att.totalpercent
+        att:att.totalpercent.toFixed(1)
       }
       return res.status(201).json(result);
+    }
+      else
+      {
+        const result = {
+          profile:userInfo
+        }
+        return res.status(201).json(result);
+      }
     }
     if(user==="admin"){
       const studentNo = await student.count();

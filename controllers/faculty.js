@@ -77,15 +77,12 @@ exports.addresults = async(req,res,next)=>{
     
     // const array = sheet.Marks;
     // // }
-    const ex = await Exam.findByIdAndUpdate(exam,
-      {$set:{maxMarks: maxmarks}}
-    )
     for(var i=0;i<array.length;i++)
     {
-      const stu = await Student.findOne({rollno:array[i].rollno});
+     // const stu = await Student.findOne({rollno:array[i].rollno});
       const updateresult = await Result.findOneAndUpdate(
-        { student:stu._id},
-        { $push:{ "scores" : [{ sem: sem, exam: exam, subject: subject, score: array[i].score}]}},
+        { student:array[i].student},
+        { $push:{ "scores":[{ sem: sem, exam: exam, subject: subject, score: array[i].score,maxmarks:maxmarks}]}},
         { upsert:true}
       )
     }
@@ -161,6 +158,8 @@ exports.makeAnnouncements = async(req,res,next)=>{
         $sort: { createdAt : -1 },
      }}
     )
+    ann.madeby=fac.fullname;
+    await ann.save();
     return res.status(201).json("done");
   }
   catch(err){
