@@ -12,36 +12,48 @@ const  excelToJson = require("convert-excel-to-json");
 
 exports.addAttendance = async (req,res,next)=>{
   try{
-    const {arrayP,date,subject,arrayA} = req.body;
+    const {sem,arrayP,date,subject,arrayA} = req.body;
     for(var i=0;i<arrayP.length;i++)
     {
-     const obj ={ date: date, subject: subject, AorP:'P'};
-      const updateattendance=await Attendance.findOneAndUpdate(
-        { student:arrayP[i]},
-        {$push:{ "attendance" : [obj]}},
-        {
-          upsert:true
-        }
-     );
-    //  console.log(updateattendance);
-      updateattendance.totalP +=1;
-      updateattendance.totalpercent = (updateattendance.totalP/(updateattendance.attendance.length+1))*100;
-      // console.log(updateattendance.totalP,updateattendance.attendance.length,updateattendance.totalpercent);
+    //  const obj ={ date: date, subject: subject, AorP:'P'};
+     const updateattendance=await Attendance.findOneAndUpdate({ student:arrayP[i]},{},{upsert:true, new: true})
+     const index = updateattendance.semWiseAtt.findIndex((att=>att.sem == sem))
+     if(index== -1)
+     {
+      updateattendance.semWiseAtt.push({sem:sem})
+     }
+     const attobj = updateattendance.semWiseAtt.find(att=>(att.sem == sem));
+     const subindex = attobj.attendance.findIndex(att=>(att.subject == subject))
+     if(subindex== -1)
+     {
+      attobj.attendance.push({subject:subject})
+     }
+     const subatt = attobj.attendance.find(att=>(att.subject == subject))
+     subatt.P.push(date);
+    //  attobj.attendance.push(obj);
+     // console.log(updateattendance);
       await updateattendance.save();
     }
     for(var i=0;i<arrayA.length;i++)
     {
-      const obj ={ date: date, subject: subject, AorP:'A'};
-       const updateattendance=await Attendance.findOneAndUpdate(
-         { student:arrayA[i]},
-         {$push:{ "attendance" : [obj]}},
-         {
-           upsert:true
-         }
-      );
-        updateattendance.totalpercent = (updateattendance.totalP/(updateattendance.attendance.length+1))*100;
-        // console.log(updateattendance.totalP,updateattendance.attendance.length)
-        await updateattendance.save();
+      // const obj ={ date: date, subject: subject, AorP:'A'};
+      
+      const updateattendance=await Attendance.findOneAndUpdate({ student:arrayA[i]},{},{upsert:true, new: true})
+      const index = updateattendance.semWiseAtt.findIndex((att=>att.sem == sem))
+      if(index== -1)
+      {
+       updateattendance.semWiseAtt.push({sem:sem})
+      }
+      const attobj = updateattendance.semWiseAtt.find(att=>(att.sem == sem))
+      const subindex = attobj.attendance.findIndex(att=>(att.subject == subject))
+      if(subindex== -1)
+      {
+       attobj.attendance.push({subject:subject})
+      }
+      const subatt = attobj.attendance.find(att=>(att.subject == subject))
+      subatt.A.push(date);
+      // attobj.attendance.push(obj);
+       await updateattendance.save();
      }
 
     res.status(201).json({message:"Attendance updated"});

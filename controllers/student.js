@@ -14,55 +14,37 @@ exports.viewAttendance = async(req,res,next)=>{
   try{
     const studentid = req.params.student;
     const array=[];
-    const student = await Student.findById(studentid);
-    const attendance = await Attendance.findOne({student:studentid});
-      if(attendance == null)
+    // const student = await Student.findById(studentid);
+    // console.log(student)
+    const attobj = await Attendance.findOne({student:studentid}).populate('student semWiseAtt.attendance.subject');
+    // console.log(attobj) 
+    if(attobj == null)
       {
         const err = new Error('No record found');
         err.statusCode = 400;
         throw err;
       }
       else{
-        // await Promise.all(student.subjects.map(async (i) =>
-        for(var i=0;i<student.subjects.length;i++) 
-        { 
-          var p=0,a=0;
-          const attend=[];
-          attendance.attendance.filter(att=>{
-            if(att.subject.toString() == student.subjects[i].toString())
-            {
-              if(att.AorP == 'P')
+        var pr=0,ab=0;
+        attobj.semWiseAtt.filter(att=>{
+              if(att.sem == parseInt(attobj.student.sem))
               {
-                p++;
-                atobj ={
-                  date: att.date,
-                  status:att.AorP
-                }
+                // console.log(att) 
+                att.attendance.forEach(a=>{
+                  object={
+                    subject: a.subject.code,
+                    present:a.P,
+                    absent:a.A,
+                    noOfP:a.P.length,
+                    per:((a.P.length*100)/(a.P.length+a.A.length)).toFixed(1)
+                  }
+                  pr+=a.P.length;
+                  ab+=a.P.length+a.A.length;
+                  array.push(object);
+                })
+               array.push({totalpresent:pr,totalpercent:((pr*100)/(pr+ab)).toFixed(1)});
               }
-              else if(att.AorP == 'A')
-              {
-                a++;
-                atobj ={
-                  date: att.date,
-                  status:att.AorP
-                }
-              }
-              attend.push(atobj);
-            }
-          });
-          if(p==0 && a==0)
-            percent =0;
-          else
-            percent = (p/(a+p))*100; 
-          const obj ={
-            subject:student.subjects[i],
-            attend: attend,
-            percentage:percent
-          }
-          array.push(obj);
-        }
-        //))
-        array.push({totalpresent:attendance.totalP,totalpercent:attendance.totalpercent});
+            });
       }
   return res.status(201).json(array);
 }
