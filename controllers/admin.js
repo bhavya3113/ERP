@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 const { aggregate } = require("../models/student");
 const faculty = require("../models/faculty");
 const Batch = require("../models/batch");
+const Batchs = require("../models/batch");
 const { json, attachment } = require("express/lib/response");
 const req = require("express/lib/request");
 const subject = require("../models/subject");
@@ -341,7 +342,7 @@ exports.timetable = async(req,res,next)=>{
     for(let i = 0 ; i < result.subjects.length;i++){
       const sub = await subject.findById({_id:result.subjects[i]});
       s.push(sub.name);
-      const teacher = await Faculty.aggregate([{$match:{"subject":result.subjects[i]}},{$group:{_id:"$fullname"}}]);
+      const teacher = await Faculty.aggregate([{$match:{"subject":result.subjects[i]}},{$group:{_id:"$fullname"}}]);      // add free in match
       s.push(teacher);
     }
     console.log(s);
@@ -501,6 +502,21 @@ exports.batchlist = async(req,res,next)=>{
     if(!err.statusCode)
     err.statusCode = 500;
     next();
+  }
+}
+exports.viewfaculty =async (req , res, next)=>{
+  try{
+    const batch = req.query.batch;
+    const year = parseInt(req.query.year);
+    const result = await Faculty.find({},'fullname email subject');
+    if(!result){
+      const err = new Error('No faculty found');
+      throw err;
+    }
+    return res.status(201).json(result);
+  }
+  catch(err){
+    next(err);
   }
 }
 

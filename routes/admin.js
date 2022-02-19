@@ -27,6 +27,7 @@ router.get("/showholidays",adminController.showHoliday);
 router.get("/getbatch/:year",adminController.batchlist);
 router.post("/makeadmin",isAuth,adminController.makeAdmin);
 router.get("/viewbatch",adminController.viewBatch);
+router.get("/viewfaculty",adminController.viewfaculty);
 
 const multer = require('multer');
 const storage = multer.diskStorage({
