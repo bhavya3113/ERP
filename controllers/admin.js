@@ -468,6 +468,7 @@ exports.editProfile = async(req, res, next)=>{
     const mobile = req.body.mobile;
     const degree = req.body.degree;
     const user =  req.query.user;
+    const subject = req.body.subject;
     const id=req.params.id;
     var imageurl;
     if(fileinfo)
@@ -479,6 +480,7 @@ exports.editProfile = async(req, res, next)=>{
       fullname:fullname,
       image:imageurl,
       email:email,
+      subject:subject,
       mobile:mobile,
       degree:degree
     },{upsert:true,omitUndefined: true});
