@@ -522,9 +522,9 @@ exports.viewfaculty =async (req , res, next)=>{
 
 exports.makeAdmin = async( req, res, next )=>{
   try{
-    const userEmail = req.body.email;
+    const id = req.body.id;
     
-      const user = await Faculty.findOne({email:userEmail});
+      const user = await Faculty.findById(id);
       if(!user){
         return res.status(404).json('not found');
       }
@@ -532,12 +532,12 @@ exports.makeAdmin = async( req, res, next )=>{
       if(user.isAdmin==true){
         user.isAdmin = false;
         user.save();
-        return res.status(201).json(`Now ${userEmail} is not admin`);
+        return res.status(201).json(`Now user is not admin`);
       }
       else{
         user.isAdmin = true;
         user.save();
-        return res.status(301).json(`Now ${userEmail} is admin`);
+        return res.status(301).json("Now user is admin");
       }
   }
   catch(err){
