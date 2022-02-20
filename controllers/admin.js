@@ -41,7 +41,7 @@ exports.addFaculty = async (req,res,next)=>{
       err.statusCode = 422;
       throw err;
     }
-    const {fullname,email,password}= req.body;
+    const {fullname,email,password,subject}= req.body;
 
     if(!fullname || !email || !password ) {
       const err = new Error('All fields are requied');
