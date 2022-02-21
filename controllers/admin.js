@@ -508,7 +508,9 @@ exports.batchlist = async(req,res,next)=>{
 }
 exports.viewfaculty =async (req , res, next)=>{
   try{
-    const result = await Faculty.find({isAdmin:false},'fullname email subject');
+    const admin = req.query.admin;
+    console.log(admin);
+    const result = await Faculty.find({isAdmin:admin},'fullname email subject');
     if(!result){
       const err = new Error('No faculty found');
       throw err;
