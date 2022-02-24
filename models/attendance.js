@@ -7,17 +7,13 @@ const attendanceSchema = new schema({
     ref:"student"
   },
 
-  semWiseAtt:[{
-    sem:Number,
-
-    attendance:[{
+  attendance:[{
       subject:{
         type:schema.Types.ObjectId,
         ref:'subject'
       },     
       P:[Date],
       A:[Date]
-    }],
   }]
 })
 

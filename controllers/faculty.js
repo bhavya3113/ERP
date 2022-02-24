@@ -17,18 +17,19 @@ exports.addAttendance = async (req,res,next)=>{
     {
     //  const obj ={ date: date, subject: subject, AorP:'P'};
      const updateattendance=await Attendance.findOneAndUpdate({ student:arrayP[i]},{},{upsert:true, new: true})
-     const index = updateattendance.semWiseAtt.findIndex((att=>att.sem == sem))
-     if(index== -1)
-     {
-      updateattendance.semWiseAtt.push({sem:sem})
-     }
-     const attobj = updateattendance.semWiseAtt.find(att=>(att.sem == sem));
-     const subindex = attobj.attendance.findIndex(att=>(att.subject == subject))
+    //  const index = updateattendance.semWiseAtt.findIndex((att=>att.sem == sem))
+    //  if(index== -1)
+    //  {
+    //   updateattendance.semWiseAtt.push({sem:sem})
+    //  }
+    //  const attobj = updateattendance.semWiseAtt.find(att=>(att.sem == sem));
+    // console.log(updateattendance)
+     const subindex = updateattendance.attendance.findIndex(att=>(att.subject == subject))
      if(subindex== -1)
      {
-      attobj.attendance.push({subject:subject})
+      updateattendance.attendance.push({subject:subject})
      }
-     const subatt = attobj.attendance.find(att=>(att.subject == subject))
+     const subatt = updateattendance.attendance.find(att=>(att.subject == subject))
      subatt.P.push(date);
     //  attobj.attendance.push(obj);
      // console.log(updateattendance);
@@ -39,18 +40,18 @@ exports.addAttendance = async (req,res,next)=>{
       // const obj ={ date: date, subject: subject, AorP:'A'};
       
       const updateattendance=await Attendance.findOneAndUpdate({ student:arrayA[i]},{},{upsert:true, new: true})
-      const index = updateattendance.semWiseAtt.findIndex((att=>att.sem == sem))
-      if(index== -1)
-      {
-       updateattendance.semWiseAtt.push({sem:sem})
-      }
-      const attobj = updateattendance.semWiseAtt.find(att=>(att.sem == sem))
-      const subindex = attobj.attendance.findIndex(att=>(att.subject == subject))
+      // const index = updateattendance.semWiseAtt.findIndex((att=>att.sem == sem))
+      // if(index== -1)
+      // {
+      //  updateattendance.semWiseAtt.push({sem:sem})
+      // }
+      // const attobj = updateattendance.semWiseAtt.find(att=>(att.sem == sem))
+      const subindex = updateattendance.attendance.findIndex(att=>(att.subject == subject))
       if(subindex== -1)
       {
-       attobj.attendance.push({subject:subject})
+        updateattendance.attendance.push({subject:subject})
       }
-      const subatt = attobj.attendance.find(att=>(att.subject == subject))
+      const subatt = updateattendance.attendance.find(att=>(att.subject == subject))
       subatt.A.push(date);
       // attobj.attendance.push(obj);
        await updateattendance.save();

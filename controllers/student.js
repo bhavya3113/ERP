@@ -16,7 +16,7 @@ exports.viewAttendance = async(req,res,next)=>{
     const array=[];
     // const student = await Student.findById(studentid);
     // console.log(student)
-    const attobj = await Attendance.findOne({student:studentid}).populate('student semWiseAtt.attendance.subject');
+    const attobj = await Attendance.findOne({student:studentid}).populate('student attendance.subject');
     // console.log(attobj) 
     if(attobj == null)
       {
@@ -26,11 +26,12 @@ exports.viewAttendance = async(req,res,next)=>{
       }
       else{
         var pr=0,ab=0;
-        attobj.semWiseAtt.filter(att=>{
-              if(att.sem == parseInt(attobj.student.sem))
-              {
+        // attobj.semWiseAtt.filter(att=>{
+        //       if(att.sem == parseInt(attobj.student.sem))
+        //       {
                 // console.log(att) 
-                att.attendance.forEach(a=>{
+                attobj.attendance.forEach(a=>{
+                  // console.log(a)
                   object={
                     subject: a.subject.code,
                     present:a.P,
@@ -38,13 +39,14 @@ exports.viewAttendance = async(req,res,next)=>{
                     noOfP:a.P.length,
                     per:((a.P.length*100)/(a.P.length+a.A.length)).toFixed(1)
                   }
+                  // console.log(object)
                   pr+=a.P.length;
-                  ab+=a.P.length+a.A.length;
+                  ab+=a.A.length;
                   array.push(object);
                 })
                array.push({totalpresent:pr,totalpercent:((pr*100)/(pr+ab)).toFixed(1)});
-              }
-            });
+            //   }
+            // });
       }
   return res.status(201).json(array);
 }
